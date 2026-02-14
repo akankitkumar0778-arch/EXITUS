@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EXITUS - Where Empires Fall</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Space+Mono:wght@400;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --gold: #d4af37;
+    --gold-light: #f4e5b8;
+    --gold-dark: #9d7f2a;
+    --crimson: #8b0000;
+    --black: #0a0a0a;
+    --charcoal: #1a1a1a;
+    --slate: #2a2a2a;
+}
+
+body {
+    background: var(--black);
+    color: var(--gold-light);
+    font-family: 'Outfit', sans-serif;
+    overflow-x: hidden;
+    position: relative;
+    height: 100vh;
+}
+
+/* ANIMATED BACKGROUND */
+.background-layer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    background: radial-gradient(circle at 20% 80%, rgba(139, 0, 0, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(212, 175, 55, 0.08) 0%, transparent 50%),
+                linear-gradient(180deg, #0a0a0a 0%, #1a1a1a 100%);
+}
+
+.grid-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        linear-gradient(rgba(212, 175, 55, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(212, 175, 55, 0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    z-index: 0;
+    animation: gridPulse 8s ease-in-out infinite;
+}
+
+@keyframes gridPulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.6; }
+}
+
+/* PARTICLE SYSTEM */
+.particle {
+    position: fixed;
+    width: 3px;
+    height: 3px;
+    background: var(--gold);
+    border-radius: 50%;
+    opacity: 0;
+    animation: float 15s infinite;
+    box-shadow: 0 0 8px var(--gold);
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(100vh) translateX(0) scale(0);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.8;
+    }
+    90% {
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateY(-100vh) translateX(100px) scale(1);
+        opacity: 0;
+    }
+}
+
+.particle:nth-child(1) { left: 10%; animation-delay: 0s; }
+.particle:nth-child(2) { left: 20%; animation-delay: 2s; }
+.particle:nth-child(3) { left: 30%; animation-delay: 4s; }
+.particle:nth-child(4) { left: 40%; animation-delay: 1s; }
+.particle:nth-child(5) { left: 50%; animation-delay: 3s; }
+.particle:nth-child(6) { left: 60%; animation-delay: 5s; }
+.particle:nth-child(7) { left: 70%; animation-delay: 2.5s; }
+.particle:nth-child(8) { left: 80%; animation-delay: 4.5s; }
+.particle:nth-child(9) { left: 90%; animation-delay: 1.5s; }
+.particle:nth-child(10) { left: 15%; animation-delay: 3.5s; }
+
+.content {
+    position: relative;
+    z-index: 1;
+}
+
+/* HEADER */
+header {
+    padding: 30px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    backdrop-filter: blur(10px);
+    background: rgba(10, 10, 10, 0.5);
+    border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+    animation: slideDown 0.8s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 900;
+    letter-spacing: 3px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    position: relative;
+}
+
+.logo::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+}
+
+.tagline {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    color: rgba(212, 175, 55, 0.6);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+/* HERO SECTION */
+.hero {
+    min-height: calc(100vh - 100px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 80px 20px;
+    position: relative;
+}
+
+.hero-content {
+    max-width: 1000px;
+    animation: fadeInUp 1s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(60px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(60px, 10vw, 140px);
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 30px;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 50%, var(--gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 80px rgba(212, 175, 55, 0.3);
+    letter-spacing: -2px;
+    animation: titleGlow 4s ease-in-out infinite;
+}
+
+@keyframes titleGlow {
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(1.3); }
+}
+
+.subtitle {
+    font-family: 'Space Mono', monospace;
+    font-size: clamp(16px, 2vw, 24px);
+    color: rgba(212, 175, 55, 0.8);
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+
+.hero-description {
+    font-size: clamp(18px, 2vw, 22px);
+    color: rgba(244, 229, 184, 0.7);
+    line-height: 1.6;
+    margin-bottom: 50px;
+    font-weight: 300;
+}
+
+.cta-button {
+    padding: 20px 60px;
+    font-size: 18px;
+    font-weight: 600;
+    font-family: 'Outfit', sans-serif;
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold), var(--gold-light));
+    background-size: 200% 200%;
+    border: 2px solid var(--gold);
+    color: var(--black);
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    box-shadow: 0 10px 40px rgba(212, 175, 55, 0.3);
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.cta-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s;
+}
+
+.cta-button:hover::before {
+    left: 100%;
+}
+
+.cta-button:hover {
+    transform: scale(1.05) translateY(-3px);
+    box-shadow: 0 20px 60px rgba(212, 175, 55, 0.5);
+    background-position: 100% 0;
+}
+
+.cta-button:active {
+    transform: scale(0.98);
+}
+
+/* PAGE TRANSITION */
+.page-transition {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--black);
+    z-index: 10000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease-out;
+}
+
+.page-transition.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+/* CURSOR EFFECT */
+.cursor-glow {
+    position: fixed;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.3s;
+    z-index: 9999;
+    mix-blend-mode: screen;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    header {
+        padding: 20px 30px;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .logo {
+        font-size: 24px;
+    }
+    
+    .cta-button {
+        padding: 16px 40px;
+        font-size: 16px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- Background Layers -->
+<div class="background-layer"></div>
+<div class="grid-overlay"></div>
+
+<!-- Particles -->
+<div class="particle"></div>
+<div class="particle"></div>
+<div class="particle"></div>
+<div class="particle"></div>
+<div class="particle"></div>
+<div class="particle"></div>
+<div class="particle"></div>
+<div class="particle"></div>
+<div class="particle"></div>
+<div class="particle"></div>
+
+<!-- Cursor Glow -->
+<div class="cursor-glow"></div>
+
+<!-- Page Transition -->
+<div class="page-transition"></div>
+
+<div class="content">
+
+<!-- Header -->
+<header>
+    <div class="logo">EXITUS</div>
+    <div class="tagline">Where Empires Fall</div>
+</header>
+
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-content">
+        <div class="subtitle">Financial Decision Simulator</div>
+        <h1 class="hero-title">EXITUS</h1>
+        <p class="hero-description">
+            Feel the pressure of billion-dollar decisions. Navigate collapsing empires. 
+            Learn from history's greatest corporate failures — before you become one.
+        </p>
+        <a href="companies.html" class="cta-button" id="beginButton">Begin Your Descent →</a>
+    </div>
+</section>
+
+</div>
+
+<script>
+// Cursor glow effect
+const cursorGlow = document.querySelector('.cursor-glow');
+let mouseX = 0, mouseY = 0;
+let glowX = 0, glowY = 0;
+
+document.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+});
+
+function animateGlow() {
+    glowX += (mouseX - glowX) * 0.1;
+    glowY += (mouseY - glowY) * 0.1;
+    
+    cursorGlow.style.left = glowX + 'px';
+    cursorGlow.style.top = glowY + 'px';
+    
+    requestAnimationFrame(animateGlow);
+}
+
+animateGlow();
+
+// Page transition effect
+const beginButton = document.getElementById('beginButton');
+const pageTransition = document.querySelector('.page-transition');
+
+beginButton.addEventListener('click', (e) => {
+    e.preventDefault();
+    pageTransition.classList.add('active');
+    
+    setTimeout(() => {
+        window.location.href = 'companies.html';
+    }, 500);
+});
+</script>
+
+</body>
+</html>

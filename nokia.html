@@ -1,0 +1,3000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nokia: Strategic Crisis Simulator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --crimson: #DC143C;
+            --deep-red: #8B0000;
+            --charcoal: #2C2C2C;
+            --slate: #4A4A4A;
+            --cream: #F5F5DC;
+            --gold: #D4AF37;
+            --light-gray: #E8E8E8;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: var(--cream);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 12px 24px;
+            background: rgba(212, 175, 55, 0.1);
+            border: 2px solid var(--gold);
+            color: var(--gold);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 14px;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .back-button:hover {
+            background: var(--gold);
+            color: var(--charcoal);
+            transform: translateX(-5px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--crimson), var(--gold));
+            animation: expandWidth 1s ease-out;
+        }
+
+        @keyframes expandWidth {
+            from { width: 0; }
+            to { width: 100px; }
+        }
+
+        h1 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, var(--crimson), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--light-gray);
+            font-weight: 300;
+            animation: fadeIn 1.2s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .game-card {
+            background: rgba(42, 42, 42, 0.95);
+            border-radius: 20px;
+            padding: 50px;
+            margin-bottom: 40px;
+            border: 2px solid rgba(220, 20, 60, 0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.6s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--crimson), var(--gold));
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .decision-header {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 2rem;
+            color: var(--gold);
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .company-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .stat-box {
+            background: rgba(220, 20, 60, 0.1);
+            border: 1px solid rgba(220, 20, 60, 0.3);
+            padding: 20px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .stat-box:hover {
+            background: rgba(220, 20, 60, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(220, 20, 60, 0.2);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--light-gray);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--gold);
+        }
+
+
+        .progress-bar-container {
+            width: 100%;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+            position: relative;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 1s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .indicator-green {
+            background: linear-gradient(90deg, #4CAF50, #66BB6A);
+        }
+
+        .indicator-amber {
+            background: linear-gradient(90deg, #FF9800, #FFA726);
+        }
+
+        .indicator-red {
+            background: linear-gradient(90deg, #DC143C, #E91E63);
+        }
+
+        .stat-percentage {
+            font-size: 0.9rem;
+            color: var(--light-gray);
+            margin-top: 5px;
+        }
+
+        .critical-notice {
+            background: linear-gradient(135deg, rgba(220, 20, 60, 0.2), rgba(139, 0, 0, 0.2));
+            border: 2px solid var(--crimson);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--gold);
+            text-align: center;
+            box-shadow: 0 0 30px rgba(220, 20, 60, 0.4);
+            animation: warningFadeIn 0.8s ease-out forwards;
+        }
+
+        @keyframes warningFadeIn {
+            0% { 
+                opacity: 0;
+                transform: translateY(-10px);
+                box-shadow: 0 0 10px rgba(220, 20, 60, 0.2);
+            }
+            100% { 
+                opacity: 1;
+                transform: translateY(0);
+                box-shadow: 0 0 30px rgba(220, 20, 60, 0.4);
+            }
+        }
+
+        .learning-category {
+            display: inline-block;
+            background: rgba(212, 175, 55, 0.2);
+            color: var(--gold);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            border: 1px solid rgba(212, 175, 55, 0.4);
+        }
+
+        .question-section {
+            background: rgba(74, 74, 74, 0.3);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            border-left: 5px solid var(--crimson);
+        }
+
+        .question-text {
+            font-size: 1.4rem;
+            font-weight: 500;
+            color: var(--cream);
+            margin-bottom: 30px;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .option-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(220, 20, 60, 0.4);
+            padding: 25px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(220, 20, 60, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .option-card:hover::before {
+            left: 100%;
+        }
+
+        .option-card:hover {
+            background: rgba(220, 20, 60, 0.15);
+            border-color: var(--gold);
+            transform: translateX(10px);
+            box-shadow: 0 10px 40px rgba(220, 20, 60, 0.3);
+        }
+
+        .option-letter {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: var(--crimson);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 40px;
+            font-weight: 700;
+            margin-right: 15px;
+            font-size: 1.2rem;
+        }
+
+        .option-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 15px;
+        }
+
+        .option-description {
+            color: var(--light-gray);
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .impact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .impact-item {
+            font-size: 0.9rem;
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+        }
+
+        .impact-label {
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        .analysis-section {
+            display: block;
+        }
+
+        /* ── Performance Chart ── */
+        .chart-section {
+            background: rgba(10, 14, 30, 0.9);
+            border: 2px solid rgba(212, 175, 55, 0.35);
+            border-radius: 18px;
+            padding: 30px 30px 20px;
+            margin-bottom: 36px;
+        }
+
+        .chart-section-title {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.5rem;
+            color: var(--gold);
+            text-align: center;
+            margin-bottom: 22px;
+            letter-spacing: 0.5px;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 320px;
+        }
+
+        .chart-legend {
+            display: flex;
+            justify-content: center;
+            gap: 28px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.88rem;
+            color: var(--light-gray);
+            padding: 5px 14px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s;
+        }
+
+        .legend-item.chosen {
+            border-color: var(--gold);
+            color: var(--gold);
+            background: rgba(212,175,55,0.12);
+            font-weight: 700;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .legend-item.chosen .legend-dot {
+            box-shadow: 0 0 8px currentColor;
+        }
+
+        .analysis-title {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 2rem;
+            color: var(--gold);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .data-point {
+            background: rgba(220, 20, 60, 0.1);
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid var(--crimson);
+            border-radius: 8px;
+        }
+
+        .data-point h4 {
+            color: var(--gold);
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .data-point p {
+            color: var(--light-gray);
+            line-height: 1.8;
+        }
+
+        .key-learnings {
+            background: rgba(212, 175, 55, 0.1);
+            border: 2px solid var(--gold);
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 30px;
+        }
+
+        .key-learnings h3 {
+            color: var(--gold);
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            font-family: 'Libre Baskerville', serif;
+        }
+
+        .key-learnings ul {
+            list-style: none;
+        }
+
+        .key-learnings li {
+            padding: 12px 0 12px 30px;
+            position: relative;
+            color: var(--cream);
+            line-height: 1.6;
+        }
+
+        .key-learnings li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--crimson);
+            font-size: 1.5rem;
+        }
+
+        .next-button {
+            background: linear-gradient(135deg, var(--crimson), var(--deep-red));
+            color: white;
+            border: none;
+            padding: 18px 50px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 30px auto;
+            display: block;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 10px 30px rgba(220, 20, 60, 0.4);
+        }
+
+        .next-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(220, 20, 60, 0.6);
+            background: linear-gradient(135deg, #ff1744, var(--crimson));
+        }
+
+        .analysis-reveal-btn {
+            display: block;
+            margin: 35px auto 10px;
+            background: transparent;
+            color: var(--gold);
+            border: 2px solid var(--gold);
+            padding: 16px 60px;
+            font-size: 1.15rem;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.2);
+        }
+
+        .analysis-reveal-btn:hover {
+            background: var(--gold);
+            color: #1a1a1a;
+            box-shadow: 0 8px 35px rgba(212, 175, 55, 0.55);
+            transform: translateY(-2px);
+        }
+
+        /* ── Balance Sheet Styles ── */
+        /* Live Balance Sheet Snapshot Styles */
+        .balance-sheet-snapshot {
+            background: linear-gradient(135deg, rgba(220, 20, 60, 0.15), rgba(212, 175, 55, 0.15));
+            border: 2px solid var(--gold);
+            border-radius: 15px;
+            padding: 35px;
+            margin: 40px 0;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        .balance-sheet-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(212, 175, 55, 0.4);
+        }
+
+        .balance-sheet-title {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.6rem;
+            color: var(--gold);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(76, 175, 80, 0.2);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #4CAF50;
+            border: 1px solid #4CAF50;
+        }
+
+        .live-pulse {
+            width: 8px;
+            height: 8px;
+            background: #4CAF50;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+
+        .financial-metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .metric-card {
+            background: rgba(42, 42, 42, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--crimson), var(--gold));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.6s ease;
+        }
+
+        .metric-card.updated::before {
+            transform: scaleX(1);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--gold);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+        }
+
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .metric-label-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .metric-label {
+            font-size: 0.85rem;
+            color: var(--light-gray);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+
+        .metric-description {
+            font-size: 0.7rem;
+            color: rgba(245, 245, 220, 0.5);
+            text-transform: none;
+            letter-spacing: 0;
+            font-weight: 400;
+            margin-top: 3px;
+            font-style: italic;
+        }
+
+        .metric-change {
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .metric-change.positive {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+        }
+
+        .metric-change.negative {
+            background: rgba(220, 20, 60, 0.2);
+            color: #DC143C;
+        }
+
+        .metric-change.neutral {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--light-gray);
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 8px;
+            font-family: 'DM Sans', monospace;
+        }
+
+        .metric-subtext {
+            font-size: 0.8rem;
+            color: rgba(245, 245, 220, 0.6);
+            font-style: italic;
+        }
+
+        .credit-rating-display {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .rating-badge {
+            font-size: 2.5rem;
+            font-weight: 700;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-family: 'Libre Baskerville', serif;
+            min-width: 100px;
+            text-align: center;
+            transition: all 0.5s ease;
+        }
+
+        .rating-AAA, .rating-AA { 
+            background: linear-gradient(135deg, #4CAF50, #66BB6A);
+            color: white;
+            box-shadow: 0 5px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .rating-A, .rating-BBB { 
+            background: linear-gradient(135deg, #2196F3, #42A5F5);
+            color: white;
+            box-shadow: 0 5px 20px rgba(33, 150, 243, 0.4);
+        }
+
+        .rating-BB, .rating-B { 
+            background: linear-gradient(135deg, #FF9800, #FFA726);
+            color: white;
+            box-shadow: 0 5px 20px rgba(255, 152, 0, 0.4);
+        }
+
+        .rating-CCC, .rating-CC, .rating-C { 
+            background: linear-gradient(135deg, #DC143C, #E91E63);
+            color: white;
+            box-shadow: 0 5px 20px rgba(220, 20, 60, 0.4);
+        }
+
+        .rating-D { 
+            background: linear-gradient(135deg, #8B0000, #4A0000);
+            color: white;
+            box-shadow: 0 5px 20px rgba(139, 0, 0, 0.5);
+        }
+
+        .rating-info {
+            flex: 1;
+        }
+
+        .rating-title {
+            font-size: 0.9rem;
+            color: var(--light-gray);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .rating-description {
+            font-size: 0.95rem;
+            color: var(--cream);
+            line-height: 1.5;
+        }
+
+        .impact-alert {
+            background: rgba(220, 20, 60, 0.15);
+            border-left: 4px solid var(--crimson);
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: var(--cream);
+            line-height: 1.6;
+        }
+
+        .impact-alert strong {
+            color: var(--gold);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .game-card {
+                padding: 30px 20px;
+            }
+            
+            .decision-header {
+                font-size: 1.5rem;
+            }
+        }
+
+        .analysis-reveal-btn {
+            display: block;
+            margin: 35px auto 10px;
+            background: transparent;
+            color: var(--gold);
+            border: 2px solid var(--gold);
+            padding: 16px 60px;
+            font-size: 1.15rem;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.2);
+        }
+
+        .analysis-reveal-btn:hover {
+            background: var(--gold);
+            color: #1a1a1a;
+            box-shadow: 0 8px 35px rgba(212, 175, 55, 0.55);
+            transform: translateY(-2px);
+        }
+
+        /* ── Page-transition system ── */
+        .page {
+            display: none;
+            animation: pageIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+        .page.active {
+            display: block;
+        }
+        @keyframes pageIn {
+            from { opacity: 0; transform: translateY(36px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .page.exit {
+            animation: pageOut 0.35s ease-in forwards;
+            pointer-events: none;
+        }
+        @keyframes pageOut {
+            from { opacity: 1; transform: translateY(0); }
+            to   { opacity: 0; transform: translateY(-28px); }
+        }
+
+        /* Analysis page lives as its own standalone page */
+        .analysis-page {
+            display: none;
+            animation: pageIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+        .analysis-page.active {
+            display: block;
+        }
+        .analysis-page.exit {
+            animation: pageOut 0.35s ease-in forwards;
+            pointer-events: none;
+        }
+
+        /* Override old show/hide logic on analysis-section */
+        .analysis-section {
+            display: block !important;  /* always rendered; visibility controlled by parent .analysis-page */
+        }
+
+        /* ===== COMPLETION PAGE STYLES ===== */
+        .completion-page {
+            display: none;
+            animation: pageIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+        .completion-page.active {
+            display: block;
+        }
+
+        .completion-trophy {
+            font-size: 5rem;
+            margin-bottom: 15px;
+            display: block;
+            animation: trophyBounce 1s ease-out;
+        }
+        @keyframes trophyBounce {
+            0% { transform: scale(0) rotate(-15deg); opacity: 0; }
+            60% { transform: scale(1.2) rotate(5deg); opacity: 1; }
+            80% { transform: scale(0.95) rotate(-2deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+        .completion-title {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 2.6rem;
+            background: linear-gradient(135deg, var(--gold), #fff8dc, var(--crimson));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+        .completion-subtitle {
+            color: var(--light-gray);
+            font-size: 1.1rem;
+            line-height: 1.8;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .completion-decisions-bar {
+            margin: 30px 0;
+        }
+        #decisionSummary {
+            display: grid;
+            grid-template-columns: repeat(3, auto);
+            gap: 12px;
+            justify-content: center;
+            justify-items: center;
+        }
+        #decisionSummary .decision-chip:nth-child(4),
+        #decisionSummary .decision-chip:nth-child(5) {
+            grid-row: 2;
+        }
+        #decisionSummary .decision-chip:nth-child(4) {
+            grid-column: 1 / span 1;
+            justify-self: end;
+        }
+        #decisionSummary .decision-chip:nth-child(5) {
+            grid-column: 2 / span 1;
+            justify-self: start;
+        }
+        .completion-decisions-bar .decision-chip {
+            background: rgba(212,175,55,0.12);
+            border: 1px solid rgba(212,175,55,0.4);
+            border-radius: 30px;
+            padding: 8px 18px;
+            font-size: 0.9rem;
+            color: var(--cream);
+            white-space: nowrap;
+        }
+        .completion-decisions-bar .decision-chip span {
+            color: var(--gold);
+            font-weight: 700;
+            margin-left: 6px;
+        }
+        .completion-graph-card {
+            background: rgba(30,30,30,0.8);
+            border: 2px solid rgba(212,175,55,0.4);
+            border-radius: 18px;
+            padding: 35px;
+            margin: 30px 0;
+        }
+        .completion-graph-header {
+            margin-bottom: 10px;
+        }
+        .completion-graph-title {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.5rem;
+            color: var(--gold);
+            margin-bottom: 6px;
+        }
+        .completion-graph-sub {
+            font-size: 0.9rem;
+            color: rgba(245,245,220,0.6);
+        }
+        .completion-legend {
+            display: flex;
+            gap: 25px;
+            margin: 15px 0 5px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+            color: var(--light-gray);
+        }
+        .legend-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .score-card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+        .score-card {
+            background: rgba(42,42,42,0.9);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        .score-card:hover { transform: translateY(-4px); }
+        .score-card-icon { font-size: 2rem; margin-bottom: 10px; }
+        .score-card-label {
+            font-size: 0.85rem;
+            color: var(--light-gray);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        .score-card-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gold);
+        }
+        .key-learnings-final {
+            background: rgba(20,20,20,0.6);
+            border: 2px solid rgba(212,175,55,0.3);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 30px 0;
+        }
+        .kl-title {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.8rem;
+            color: var(--gold);
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .kl-intro {
+            color: var(--light-gray);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+        .kl-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 35px;
+        }
+        .kl-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 18px;
+            background: linear-gradient(135deg, rgba(220,20,60,0.12), rgba(212,175,55,0.08));
+            border: 1px solid rgba(220,20,60,0.35);
+            border-radius: 14px;
+            padding: 22px 25px;
+            animation: fadeInUp 0.6s ease-out both;
+        }
+        .kl-card-badge {
+            flex-shrink: 0;
+            width: 46px;
+            height: 46px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            background: rgba(220,20,60,0.2);
+            border: 1px solid rgba(220,20,60,0.4);
+        }
+        .kl-card-body {}
+        .kl-card-label {
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--crimson);
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        .kl-card-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 6px;
+        }
+        .kl-card-text {
+            color: var(--light-gray);
+            font-size: 0.95rem;
+            line-height: 1.65;
+        }
+        .kl-card-positive { border-color: rgba(76,175,80,0.4); background: linear-gradient(135deg, rgba(76,175,80,0.1), rgba(212,175,55,0.06)); }
+        .kl-card-positive .kl-card-badge { background: rgba(76,175,80,0.2); border-color: rgba(76,175,80,0.4); }
+        .kl-card-positive .kl-card-label { color: #4CAF50; }
+        .kl-universal {
+            border-top: 2px solid rgba(212,175,55,0.3);
+            padding-top: 40px;
+            margin-top: 20px;
+        }
+        .kl-universal-title {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: var(--gold);
+            text-align: center;
+            margin-bottom: 35px;
+            letter-spacing: 0.5px;
+        }
+        .kl-universal-title .title-bolt { color: var(--crimson); margin-right: 10px; }
+        .kl-universal-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        @media (max-width: 900px) { .kl-universal-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 580px) { .kl-universal-grid { grid-template-columns: 1fr; } }
+        .kl-universal-card {
+            background: linear-gradient(145deg, rgba(30,28,35,0.95), rgba(22,20,28,0.98));
+            border: 1px solid rgba(255,255,255,0.09);
+            border-radius: 18px;
+            padding: 28px 24px 24px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+        }
+        .kl-universal-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 18px;
+            background: radial-gradient(ellipse at top left, rgba(212,175,55,0.04) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .kl-universal-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(212,175,55,0.35);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(212,175,55,0.15);
+        }
+        .kl-u-card-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+        .kl-u-num {
+            font-size: 2.6rem;
+            font-weight: 900;
+            font-family: 'Libre Baskerville', serif;
+            color: rgba(180,140,60,0.45);
+            line-height: 1;
+            letter-spacing: -1px;
+        }
+        .kl-u-icon {
+            font-size: 1.8rem;
+            opacity: 0.7;
+        }
+        .kl-u-title {
+            font-size: 1.08rem;
+            font-weight: 700;
+            color: var(--gold);
+            line-height: 1.4;
+            margin-bottom: 10px;
+        }
+        .kl-u-text {
+            font-size: 0.92rem;
+            color: rgba(245,245,220,0.7);
+            line-height: 1.65;
+        }
+
+    </style>
+</head>
+<body>
+    <a href="companies.html" class="back-button">← Back to Companies</a>
+    <div class="container">
+        <div class="header">
+            <h1>NOKIA</h1>
+            <p class="subtitle">Strategic Crisis Simulator: Navigate 5 Critical Decisions (2007-2013)</p>
+        </div>
+
+        <!-- Decision 1 -->
+        <div class="page active" id="page-decision1">
+        <div class="game-card" id="decision1">
+            <div class="decision-header">Q1 (2007) – iPhone Disruption</div>
+
+            <div class="critical-notice">⚠️ This decision will shape the next 5–10 years of the company. ⚠️</div>
+
+            <div class="question-section">
+                <div class="question-text">Apple launches iPhone with touchscreen innovation. As Nokia CEO, what is your response?</div>
+            </div>
+
+            <div class="company-stats">
+                <div class="stat-box">
+                    <div class="stat-label">Cash Reserve</div>
+                    <div class="stat-value">€15B</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill indicator-green" style="width: 85%"></div>
+                    </div>
+                    <div class="stat-percentage">Industry leader</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Total Debt</div>
+                    <div class="stat-value">€2B</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill indicator-green" style="width: 15%"></div>
+                    </div>
+                    <div class="stat-percentage">Low and manageable</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Market Share</div>
+                    <div class="stat-value">40%</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill indicator-green" style="width: 80%"></div>
+                    </div>
+                    <div class="stat-percentage">Global market leader</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Position</div>
+                    <div class="stat-value">Dominant</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill indicator-green" style="width: 95%"></div>
+                    </div>
+                    <div class="stat-percentage">Industry standard</div>
+                </div>
+            </div>
+
+            <div class="options-container">
+                <div class="option-card" onclick="selectOption(1, 'A')">
+                    <div class="option-title">
+                        <span class="option-letter">A</span>
+                        Invest heavily in new smartphone OS
+                    </div>
+                    <div class="option-description">
+                        Build a modern touchscreen operating system and ecosystem to directly compete with Apple's revolutionary user experience.
+                    </div>
+                    <div class="impact-grid">
+                        <div class="impact-item">
+                            <span class="impact-label">Cash Flow:</span> −€3B
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Debt:</span> +€1B
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Short-Term:</span> High Cost
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Long-Term:</span> Innovation Edge
+                        </div>
+                    </div>
+                </div>
+
+                <div class="option-card" onclick="selectOption(1, 'B')">
+                    <div class="option-title">
+                        <span class="option-letter">B</span>
+                        Improve existing Symbian
+                    </div>
+                    <div class="option-description">
+                        Upgrade Symbian gradually to reduce risk, protecting current users while delaying expensive full-platform transformation.
+                    </div>
+                    <div class="impact-grid">
+                        <div class="impact-item">
+                            <span class="impact-label">Cash Flow:</span> −€1B
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Debt:</span> €0
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Short-Term:</span> Stable Revenue
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Long-Term:</span> Tech Gap
+                        </div>
+                    </div>
+                </div>
+
+                <div class="option-card" onclick="selectOption(1, 'C')">
+                    <div class="option-title">
+                        <span class="option-letter">C</span>
+                        Focus on feature phones
+                    </div>
+                    <div class="option-description">
+                        Protect strong global keypad phone market and maximize profits instead of entering risky smartphone competition.
+                    </div>
+                    <div class="impact-grid">
+                        <div class="impact-item">
+                            <span class="impact-label">Cash Flow:</span> €0
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Debt:</span> €0
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Short-Term:</span> Safe Profit
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Long-Term:</span> Market Decline
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div><!-- /page-decision1 -->
+
+        <!-- Analysis 1 -->
+        <div class="analysis-page" id="page-analysis1">
+        <div class="analysis-section" id="analysis1">
+            <div class="analysis-graph-page" id="graphPage1">
+                <div class="analysis-title">Decision Analysis & Financial Impact</div>
+
+                <!-- Performance Chart -->
+                <div class="chart-section">
+                    <div class="chart-section-title">📈 Your Decision Impact: Market Share & Innovation Timeline (2007-2009)</div>
+                    <div class="chart-wrapper"><canvas id="chart1"></canvas></div>
+                    <div class="chart-legend" id="legend1"></div>
+                </div>
+
+                <!-- Live Balance Sheet Snapshot -->
+                <div class="balance-sheet-snapshot" id="balanceSheet1">
+                    <div class="balance-sheet-header">
+                        <h3 class="balance-sheet-title">
+                            📊 Live Balance Sheet Snapshot
+                        </h3>
+                        <div class="live-indicator">
+                            <div class="live-pulse"></div>
+                            UPDATED
+                        </div>
+                    </div>
+
+                    <div class="financial-metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <span class="metric-label">💰 Cash Reserve</span>
+                                <span class="metric-change" id="cashChange1">--</span>
+                            </div>
+                            <div class="metric-value" id="cashValue1">€--</div>
+                            <div class="metric-subtext" id="cashSubtext1">Available liquidity</div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <span class="metric-label">📉 Debt</span>
+                                <span class="metric-change" id="debtChange1">--</span>
+                            </div>
+                            <div class="metric-value" id="debtValue1">€--</div>
+                            <div class="metric-subtext" id="debtSubtext1">Financial obligations</div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <span class="metric-label">📊 Market Share</span>
+                                <span class="metric-change" id="marketShareChange1">--</span>
+                            </div>
+                            <div class="metric-value" id="marketShareValue1">--%</div>
+                            <div class="metric-subtext" id="marketShareSubtext1">Smartphone market position</div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <span class="metric-label">💵 ARPU</span>
+                                <span class="metric-change" id="arpuChange1">--</span>
+                            </div>
+                            <div class="metric-value" id="arpuValue1">€--</div>
+                            <div class="metric-subtext" id="arpuSubtext1">Revenue per user</div>
+                        </div>
+                    </div>
+
+                    <div class="credit-rating-display">
+                        <div class="rating-badge" id="ratingBadge1">--</div>
+                        <div class="rating-info">
+                            <div class="rating-title">Credit Rating</div>
+                            <div class="rating-description" id="ratingDescription1">Calculating financial health...</div>
+                        </div>
+                    </div>
+
+                    <div class="impact-alert" id="impactAlert1" style="display:none;">
+                        <strong>⚠️ Strategic Impact:</strong> <span id="impactText1"></span>
+                    </div>
+                </div>
+
+                <button class="analysis-reveal-btn" onclick="showDecision(2)">NEXT SCENARIO</button>
+            </div>
+        </div>
+        </div><!-- /page-analysis1 -->
+
+        <!-- Decision 2 -->
+        <div class="page" id="page-decision2">
+        <div class="game-card" id="decision2">
+            <div class="decision-header">Q2 (2008–09) – Android Growth</div>
+            
+            <div class="critical-notice">⚠️ This decision will decide the technological future of Nokia. ⚠️</div>
+            
+            <div class="question-section">
+                <div class="question-text">Google launches Android. Should Nokia collaborate or stay independent?</div>
+            </div>
+
+            <div class="company-stats">
+                <div class="stat-box">
+                    <div class="stat-label">Cash Reserve</div>
+                    <div class="stat-value" id="startCash2">€13B</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill indicator-amber" style="width: 65%"></div>
+                    </div>
+                    <div class="stat-percentage">Post-iPhone adjustment</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Total Debt</div>
+                    <div class="stat-value" id="startDebt2">€2.5B</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill indicator-green" style="width: 20%"></div>
+                    </div>
+                    <div class="stat-percentage">Manageable levels</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Market Share</div>
+                    <div class="stat-value">Declining</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill indicator-amber" style="width: 50%"></div>
+                    </div>
+                    <div class="stat-percentage">Android emerging threat</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Platform Position</div>
+                    <div class="stat-value">Weakening</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill indicator-red" style="width: 40%"></div>
+                    </div>
+                    <div class="stat-percentage">Symbian losing developers</div>
+                </div>
+            </div>
+
+            <div class="options-container">
+                <div class="option-card" onclick="selectOption(2, 'A')">
+                    <div class="option-title">
+                        <span class="option-letter">A</span>
+                        Partner with Google (Android)
+                    </div>
+                    <div class="option-description">
+                        Adopt Android quickly to regain smartphone competitiveness while reducing internal development pressure and risk.
+                    </div>
+                    <div class="impact-grid">
+                        <div class="impact-item">
+                            <span class="impact-label">Cash Flow:</span> −€1B
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Debt:</span> €0
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Short-Term:</span> Fast Entry
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Long-Term:</span> Low Control
+                        </div>
+                    </div>
+                </div>
+
+                <div class="option-card" onclick="selectOption(2, 'B')">
+                    <div class="option-title">
+                        <span class="option-letter">B</span>
+                        Build stronger in-house system
+                    </div>
+                    <div class="option-description">
+                        Invest aggressively in internal R&D to maintain ecosystem control and long-term independence.
+                    </div>
+                    <div class="impact-grid">
+                        <div class="impact-item">
+                            <span class="impact-label">Cash Flow:</span> −€2B
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Debt:</span> +€1B
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Short-Term:</span> Heavy Spending
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Long-Term:</span> Strategic Control
+                        </div>
+                    </div>
+                </div>
+
+                <div class="option-card" onclick="selectOption(2, 'C')">
+                    <div class="option-title">
+                        <span class="option-letter">C</span>
+                        Cut costs & defend margins
+                    </div>
+                    <div class="option-description">
+                        Reduce R&D and focus on profitability while waiting to observe smartphone market direction.
+                    </div>
+                    <div class="impact-grid">
+                        <div class="impact-item">
+                            <span class="impact-label">Cash Flow:</span> +€1B
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Debt:</span> €0
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Short-Term:</span> Cash Stability
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Long-Term:</span> Innovation Weakness
+                        </div>
+                    </div>
+                </div>                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Short-Term:</span> Brand Growth
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Long-Term:</span> Focus Loss
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div><!-- /page-decision2 -->
+
+        <!-- Analysis 2 -->
+        <div class="analysis-page" id="page-analysis2">
+        <div class="analysis-section" id="analysis2">
+            <div class="analysis-graph-page" id="graphPage2">
+                <div class="analysis-title">Decision Analysis & Financial Impact</div>
+
+                <!-- Performance Chart -->
+                <div class="chart-section">
+                    <div class="chart-section-title">📈 Your Decision Impact: Platform Strategy & Market Position (2008-2010)</div>
+                    <div class="chart-wrapper"><canvas id="chart2"></canvas></div>
+                    <div class="chart-legend" id="legend2"></div>
+                </div>
+
+                <div class="balance-sheet-snapshot" id="balanceSheet2">
+                    <div class="balance-sheet-header">
+                        <h3 class="balance-sheet-title">
+                            📊 Live Balance Sheet Snapshot
+                        </h3>
+                        <div class="live-indicator">
+                            <div class="live-pulse"></div>
+                            UPDATED
+                        </div>
+                    </div>
+
+                    <div class="financial-metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <span class="metric-label">💰 Cash Reserve</span>
+                                <span class="metric-change" id="cashChange2">--</span>
+                            </div>
+                            <div class="metric-value" id="cashValue2">€--</div>
+                            <div class="metric-subtext" id="cashSubtext2">Available liquidity</div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <span class="metric-label">📉 Debt</span>
+                                <span class="metric-change" id="debtChange2">--</span>
+                            </div>
+                            <div class="metric-value" id="debtValue2">€--</div>
+                            <div class="metric-subtext" id="debtSubtext2">Financial obligations</div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <span class="metric-label">📊 Market Share</span>
+                                <span class="metric-change" id="marketShareChange2">--</span>
+                            </div>
+                            <div class="metric-value" id="marketShareValue2">--%</div>
+                            <div class="metric-subtext" id="marketShareSubtext2">Smartphone market position</div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <span class="metric-label">💵 ARPU</span>
+                                <span class="metric-change" id="arpuChange2">--</span>
+                            </div>
+                            <div class="metric-value" id="arpuValue2">€--</div>
+                            <div class="metric-subtext" id="arpuSubtext2">Revenue per user</div>
+                        </div>
+                    </div>
+
+                    <div class="credit-rating-display">
+                        <div class="rating-badge" id="ratingBadge2">--</div>
+                        <div class="rating-info">
+                            <div class="rating-title">Credit Rating</div>
+                            <div class="rating-description" id="ratingDescription2">Calculating financial health...</div>
+                        </div>
+                    </div>
+
+                    <div class="impact-alert" id="impactAlert2" style="display:none;">
+                        <strong>⚠️ Strategic Impact:</strong> <span id="impactText2"></span>
+                    </div>
+                </div>
+
+                <button class="analysis-reveal-btn" onclick="showDecision(3)">NEXT SCENARIO</button>
+            </div>
+        </div>
+        </div><!-- /page-analysis2 -->
+
+        <!-- Decision 3 -->
+        <div class="page" id="page-decision3">
+        <div class="game-card" id="decision3">
+            <div class="decision-header">Decision 3: Rise of Social Media (2005–07)</div>
+            
+            <div class="critical-notice">⚠️ This decision will determine Yahoo's position in the social media revolution. ⚠️</div>
+            
+            <div class="question-section">
+                <div class="question-text">How should Yahoo respond to the emerging social media wave led by Facebook and MySpace?</div>
+            </div>
+
+            <div class="company-stats">
+                <div class="stat-box">
+                    <div class="stat-label">Cash Reserve</div>
+                    <div class="stat-value" id="startCash3">$4B</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill indicator-amber" style="width: 55%"></div>
+                    </div>
+                    <div class="stat-percentage">Adequate but declining</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Total Debt</div>
+                    <div class="stat-value" id="startDebt3">$1.5B</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill indicator-amber" style="width: 35%"></div>
+                    </div>
+                    <div class="stat-percentage">Growing concern</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Social Presence</div>
+                    <div class="stat-value">Minimal</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill indicator-red" style="width: 20%"></div>
+                    </div>
+                    <div class="stat-percentage">Missing the wave</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">User Growth</div>
+                    <div class="stat-value">Stagnant</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill indicator-red" style="width: 30%"></div>
+                    </div>
+                    <div class="stat-percentage">Users shifting to social</div>
+                </div>
+            </div>
+
+            <div class="options-container">
+                <div class="option-card" onclick="selectOption(3, 'A')">
+                    <div class="option-title">
+                        <span class="option-letter">A</span>
+                        Acquire Facebook
+                    </div>
+                    <div class="option-description">
+                        Attempt early acquisition of Facebook to secure leadership in social networking and capture the next major internet evolution wave.
+                    </div>
+                    <div class="impact-grid">
+                        <div class="impact-item">
+                            <span class="impact-label">Cash Outflow:</span> −$2B
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Debt:</span> +$1B
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Short-Term:</span> Big Investment
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Long-Term:</span> Social Dominance
+                        </div>
+                    </div>
+                </div>
+
+                <div class="option-card" onclick="selectOption(3, 'B')">
+                    <div class="option-title">
+                        <span class="option-letter">B</span>
+                        Develop Own Social Network
+                    </div>
+                    <div class="option-description">
+                        Create an internal social networking platform to compete independently with emerging platforms and retain strategic control.
+                    </div>
+                    <div class="impact-grid">
+                        <div class="impact-item">
+                            <span class="impact-label">Cash Outflow:</span> −$1B
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Debt:</span> $0
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Short-Term:</span> Product Launch
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Long-Term:</span> Execution Risk
+                        </div>
+                    </div>
+                </div>
+
+                <div class="option-card" onclick="selectOption(3, 'C')">
+                    <div class="option-title">
+                        <span class="option-letter">C</span>
+                        Ignore Social Media Trend
+                    </div>
+                    <div class="option-description">
+                        Prioritize core search and advertising operations instead of investing heavily in uncertain and rapidly evolving social platforms.
+                    </div>
+                    <div class="impact-grid">
+                        <div class="impact-item">
+                            <span class="impact-label">Cash Inflow:</span> +$500M
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Debt:</span> $0
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Short-Term:</span> Cash Stability
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Long-Term:</span> Market Loss
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div><!-- /page-decision3 -->
+
+        <!-- Analysis 3 -->
+        <div class="analysis-page" id="page-analysis3">
+        <div class="analysis-section" id="analysis3">
+            <div class="analysis-graph-page" id="graphPage3">
+                <div class="analysis-title">Decision Analysis & Financial Impact</div>
+
+                <!-- Performance Chart -->
+                <div class="chart-section">
+                    <div class="chart-section-title">📈 Your Decision Impact: Ecosystem Value & Market Share (2010-2012)</div>
+                    <div class="chart-wrapper"><canvas id="chart3"></canvas></div>
+                    <div class="chart-legend" id="legend3"></div>
+                </div>
+
+                <div class="balance-sheet-snapshot" id="balanceSheet3">
+                    <div class="balance-sheet-header">
+                        <h3 class="balance-sheet-title">
+                            📊 Live Balance Sheet Snapshot
+                        </h3>
+                        <div class="live-indicator">
+                            <div class="live-pulse"></div>
+                            UPDATED
+                        </div>
+                    </div>
+
+                    <div class="financial-metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <span class="metric-label">💰 Cash Reserve</span>
+                                <span class="metric-change" id="cashChange3">--</span>
+                            </div>
+                            <div class="metric-value" id="cashValue3">€--</div>
+                            <div class="metric-subtext" id="cashSubtext3">Available liquidity</div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <span class="metric-label">📉 Debt</span>
+                                <span class="metric-change" id="debtChange3">--</span>
+                            </div>
+                            <div class="metric-value" id="debtValue3">€--</div>
+                            <div class="metric-subtext" id="debtSubtext3">Financial obligations</div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <span class="metric-label">📊 Market Share</span>
+                                <span class="metric-change" id="marketShareChange3">--</span>
+                            </div>
+                            <div class="metric-value" id="marketShareValue3">--%</div>
+                            <div class="metric-subtext" id="marketShareSubtext3">Smartphone market position</div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <span class="metric-label">💵 ARPU</span>
+                                <span class="metric-change" id="arpuChange3">--</span>
+                            </div>
+                            <div class="metric-value" id="arpuValue3">€--</div>
+                            <div class="metric-subtext" id="arpuSubtext3">Revenue per user</div>
+                        </div>
+                    </div>
+
+                    <div class="credit-rating-display">
+                        <div class="rating-badge" id="ratingBadge3">--</div>
+                        <div class="rating-info">
+                            <div class="rating-title">Credit Rating</div>
+                            <div class="rating-description" id="ratingDescription3">Calculating financial health...</div>
+                        </div>
+                    </div>
+
+                    <div class="impact-alert" id="impactAlert3" style="display:none;">
+                        <strong>⚠️ Strategic Impact:</strong> <span id="impactText3"></span>
+                    </div>
+                </div>
+
+                <button class="analysis-reveal-btn" onclick="showDecision(4)">NEXT SCENARIO</button>
+            </div>
+        </div>
+        </div><!-- /page-analysis3 -->
+
+        <!-- Decision 4 -->
+        <div class="page" id="page-decision4">
+        <div class="game-card" id="decision4">
+            <div class="decision-header">Decision 4: Microsoft Buyout Offer (2008)</div>
+            
+            <div class="critical-notice">⚠️ This decision will decide Yahoo's independence and future direction. ⚠️</div>
+            
+            <div class="question-section">
+                <div class="question-text">Microsoft offers to acquire Yahoo for $44.6 billion. How should Yahoo respond?</div>
+            </div>
+
+            <div class="company-stats">
+                <div class="stat-box">
+                    <div class="stat-label">Cash Reserve</div>
+                    <div class="stat-value" id="startCash4">$3B</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill indicator-amber" style="width: 45%"></div>
+                    </div>
+                    <div class="stat-percentage">Reserves declining</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Total Debt</div>
+                    <div class="stat-value" id="startDebt4">$2B</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill indicator-red" style="width: 45%"></div>
+                    </div>
+                    <div class="stat-percentage">Rising pressure</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Market Value</div>
+                    <div class="stat-value">Falling</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill indicator-red" style="width: 35%"></div>
+                    </div>
+                    <div class="stat-percentage">Losing ground to Google</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Strategic Direction</div>
+                    <div class="stat-value">Unclear</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill indicator-red" style="width: 25%"></div>
+                    </div>
+                    <div class="stat-percentage">Multiple CEO changes</div>
+                </div>
+            </div>
+
+            <div class="options-container">
+                <div class="option-card" onclick="selectOption(4, 'A')">
+                    <div class="option-title">
+                        <span class="option-letter">A</span>
+                        Accept Microsoft Acquisition
+                    </div>
+                    <div class="option-description">
+                        Accept Microsoft's acquisition offer to deliver strong shareholder returns while ending Yahoo's independent strategic direction permanently.
+                    </div>
+                    <div class="impact-grid">
+                        <div class="impact-item">
+                            <span class="impact-label">Cash Inflow:</span> +$10B
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Debt:</span> −$1B
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Short-Term:</span> Cash Inflow
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Long-Term:</span> Independence Loss
+                        </div>
+                    </div>
+                </div>
+
+                <div class="option-card" onclick="selectOption(4, 'B')">
+                    <div class="option-title">
+                        <span class="option-letter">B</span>
+                        Reject Offer and Stay Independent
+                    </div>
+                    <div class="option-description">
+                        Decline Microsoft's proposal and attempt a risky internal turnaround to regain competitiveness in search and digital advertising.
+                    </div>
+                    <div class="impact-grid">
+                        <div class="impact-item">
+                            <span class="impact-label">Cash Outflow:</span> −$1B
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Debt:</span> +$500M
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Short-Term:</span> Risk Taking
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Long-Term:</span> Uncertain Future
+                        </div>
+                    </div>
+                </div>
+
+                <div class="option-card" onclick="selectOption(4, 'C')">
+                    <div class="option-title">
+                        <span class="option-letter">C</span>
+                        Form Strategic Partnership
+                    </div>
+                    <div class="option-description">
+                        Enter a limited strategic partnership with Microsoft for search collaboration while maintaining overall corporate independence.
+                    </div>
+                    <div class="impact-grid">
+                        <div class="impact-item">
+                            <span class="impact-label">Cash Inflow:</span> +$2B
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Debt:</span> $0
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Short-Term:</span> Stability
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Long-Term:</span> Limited Control
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div><!-- /page-decision4 -->
+
+        <!-- Analysis 4 -->
+        <div class="analysis-page" id="page-analysis4">
+        <div class="analysis-section" id="analysis4">
+            <div class="analysis-graph-page" id="graphPage4">
+                <div class="analysis-title">Decision Analysis & Financial Impact</div>
+
+                <!-- Performance Chart -->
+                <div class="chart-section">
+                    <div class="chart-section-title">📈 Your Decision Impact: Company Valuation Under Pressure (2011-2012)</div>
+                    <div class="chart-wrapper"><canvas id="chart4"></canvas></div>
+                    <div class="chart-legend" id="legend4"></div>
+                </div>
+
+                <div class="balance-sheet-snapshot" id="balanceSheet4">
+                    <div class="balance-sheet-header">
+                        <h3 class="balance-sheet-title">
+                            📊 Live Balance Sheet Snapshot
+                        </h3>
+                        <div class="live-indicator">
+                            <div class="live-pulse"></div>
+                            UPDATED
+                        </div>
+                    </div>
+
+                    <div class="financial-metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <span class="metric-label">💰 Cash Reserve</span>
+                                <span class="metric-change" id="cashChange4">--</span>
+                            </div>
+                            <div class="metric-value" id="cashValue4">€--</div>
+                            <div class="metric-subtext" id="cashSubtext4">Available liquidity</div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <span class="metric-label">📉 Debt</span>
+                                <span class="metric-change" id="debtChange4">--</span>
+                            </div>
+                            <div class="metric-value" id="debtValue4">€--</div>
+                            <div class="metric-subtext" id="debtSubtext4">Financial obligations</div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <span class="metric-label">📊 Market Share</span>
+                                <span class="metric-change" id="marketShareChange4">--</span>
+                            </div>
+                            <div class="metric-value" id="marketShareValue4">--%</div>
+                            <div class="metric-subtext" id="marketShareSubtext4">Smartphone market position</div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <span class="metric-label">💵 ARPU</span>
+                                <span class="metric-change" id="arpuChange4">--</span>
+                            </div>
+                            <div class="metric-value" id="arpuValue4">€--</div>
+                            <div class="metric-subtext" id="arpuSubtext4">Revenue per user</div>
+                        </div>
+                    </div>
+
+                    <div class="credit-rating-display">
+                        <div class="rating-badge" id="ratingBadge4">--</div>
+                        <div class="rating-info">
+                            <div class="rating-title">Credit Rating</div>
+                            <div class="rating-description" id="ratingDescription4">Calculating financial health...</div>
+                        </div>
+                    </div>
+
+                    <div class="impact-alert" id="impactAlert4" style="display:none;">
+                        <strong>⚠️ Strategic Impact:</strong> <span id="impactText4"></span>
+                    </div>
+                </div>
+
+                <button class="analysis-reveal-btn" onclick="showDecision(5)">NEXT SCENARIO</button>
+            </div>
+        </div>
+        </div><!-- /page-analysis4 -->
+
+        <!-- Decision 5 -->
+        <div class="page" id="page-decision5">
+        <div class="game-card" id="decision5">
+            <div class="decision-header">Decision 5: Final Survival Phase (2013–16)</div>
+            
+            <div class="critical-notice">⚠️ This is the final decision that will determine Yahoo's ultimate fate. ⚠️</div>
+            
+            <div class="question-section">
+                <div class="question-text">After years of decline and management turmoil, what is Yahoo's best path forward?</div>
+            </div>
+
+            <div class="company-stats">
+                <div class="stat-box">
+                    <div class="stat-label">Cash Reserve</div>
+                    <div class="stat-value" id="startCash5">$2B</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill indicator-red" style="width: 30%"></div>
+                    </div>
+                    <div class="stat-percentage">Critically low</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Total Debt</div>
+                    <div class="stat-value" id="startDebt5">$2.5B</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill indicator-red" style="width: 55%"></div>
+                    </div>
+                    <div class="stat-percentage">Mounting pressure</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Market Relevance</div>
+                    <div class="stat-value">Fading</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill indicator-red" style="width: 15%"></div>
+                    </div>
+                    <div class="stat-percentage">Users leaving platform</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Future Prospects</div>
+                    <div class="stat-value">Dire</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill indicator-red" style="width: 10%"></div>
+                    </div>
+                    <div class="stat-percentage">Searching for exit</div>
+                </div>
+            </div>
+
+            <div class="options-container">
+                <div class="option-card" onclick="selectOption(5, 'A')">
+                    <div class="option-title">
+                        <span class="option-letter">A</span>
+                        Sell Core Business to Verizon
+                    </div>
+                    <div class="option-description">
+                        Sell Yahoo's core internet operations to Verizon to secure financial stability and maximize remaining shareholder value.
+                    </div>
+                    <div class="impact-grid">
+                        <div class="impact-item">
+                            <span class="impact-label">Cash Inflow:</span> +$5B
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Debt:</span> −$1B
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Short-Term:</span> Liquidity
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Long-Term:</span> Brand End
+                        </div>
+                    </div>
+                </div>
+
+                <div class="option-card" onclick="selectOption(5, 'B')">
+                    <div class="option-title">
+                        <span class="option-letter">B</span>
+                        Invest in AI and Technology Rebuild
+                    </div>
+                    <div class="option-description">
+                        Commit significant capital toward artificial intelligence and next-generation technologies to attempt a bold long-term strategic comeback.
+                    </div>
+                    <div class="impact-grid">
+                        <div class="impact-item">
+                            <span class="impact-label">Cash Outflow:</span> −$2B
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Debt:</span> +$1B
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Short-Term:</span> Heavy Risk
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Long-Term:</span> Turnaround Chance
+                        </div>
+                    </div>
+                </div>
+
+                <div class="option-card" onclick="selectOption(5, 'C')">
+                    <div class="option-title">
+                        <span class="option-letter">C</span>
+                        Break Company into Segments
+                    </div>
+                    <div class="option-description">
+                        Separate business units and sell valuable assets individually to unlock higher overall market valuation.
+                    </div>
+                    <div class="impact-grid">
+                        <div class="impact-item">
+                            <span class="impact-label">Cash Inflow:</span> +$3B
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Debt:</span> −$500M
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Short-Term:</span> Financial Gain
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Long-Term:</span> Fragmentation
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div><!-- /page-decision5 -->
+
+        <!-- Analysis 5 -->
+        <div class="analysis-page" id="page-analysis5">
+        <div class="analysis-section" id="analysis5">
+            <div class="analysis-graph-page" id="graphPage5">
+                <div class="analysis-title">Final Decision Analysis & Financial Impact</div>
+
+                <!-- Performance Chart -->
+                <div class="chart-section">
+                    <div class="chart-section-title">📈 Your Decision Impact: Final Strategic Outcome (2012-2013)</div>
+                    <div class="chart-wrapper"><canvas id="chart5"></canvas></div>
+                    <div class="chart-legend" id="legend5"></div>
+                </div>
+
+                <div class="balance-sheet-snapshot" id="balanceSheet5">
+                    <div class="balance-sheet-header">
+                        <h3 class="balance-sheet-title">
+                            📊 Live Balance Sheet Snapshot
+                        </h3>
+                        <div class="live-indicator">
+                            <div class="live-pulse"></div>
+                            UPDATED
+                        </div>
+                    </div>
+
+                    <div class="financial-metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <span class="metric-label">💰 Cash Reserve</span>
+                                <span class="metric-change" id="cashChange5">--</span>
+                            </div>
+                            <div class="metric-value" id="cashValue5">€--</div>
+                            <div class="metric-subtext" id="cashSubtext5">Final liquidity</div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <span class="metric-label">📉 Debt</span>
+                                <span class="metric-change" id="debtChange5">--</span>
+                            </div>
+                            <div class="metric-value" id="debtValue5">€--</div>
+                            <div class="metric-subtext" id="debtSubtext5">Final obligations</div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <span class="metric-label">📊 Market Share</span>
+                                <span class="metric-change" id="marketShareChange5">--</span>
+                            </div>
+                            <div class="metric-value" id="marketShareValue5">--%</div>
+                            <div class="metric-subtext" id="marketShareSubtext5">Smartphone market position</div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <span class="metric-label">💵 ARPU</span>
+                                <span class="metric-change" id="arpuChange5">--</span>
+                            </div>
+                            <div class="metric-value" id="arpuValue5">€--</div>
+                            <div class="metric-subtext" id="arpuSubtext5">Revenue per user</div>
+                        </div>
+                    </div>
+
+                    <div class="credit-rating-display">
+                        <div class="rating-badge" id="ratingBadge5">--</div>
+                        <div class="rating-info">
+                            <div class="rating-title">Credit Rating</div>
+                            <div class="rating-description" id="ratingDescription5">Calculating final financial health...</div>
+                        </div>
+                    </div>
+
+                    <div class="impact-alert" id="impactAlert5" style="display:none;">
+                        <strong>⚠️ Strategic Impact:</strong> <span id="impactText5"></span>
+                    </div>
+                </div>
+
+                <button class="analysis-reveal-btn" onclick="showCompletionPage()">ANALYSIS</button>
+            </div>
+        </div>
+        </div><!-- /page-analysis5 -->
+
+        <!-- Completion Page -->
+        <div class="completion-page" id="page-completion">
+            <div class="game-card" style="text-align: center;">
+                <div class="completion-trophy">🏆</div>
+                <h2 class="completion-title">CEO Simulation Complete</h2>
+                <p class="completion-subtitle">You have navigated all five critical decisions in Nokia's strategic history.<br>See how your choices compare to what actually happened.</p>
+            </div>
+
+            <!-- Your Decisions Summary -->
+            <div class="completion-decisions-bar">
+                <div id="decisionSummary"></div>
+            </div>
+
+            <!-- Comparison Graph -->
+            <div class="completion-graph-card">
+                <div class="completion-graph-header">
+                    <h3 class="completion-graph-title">📈 Your Strategy vs. Actual Nokia Performance</h3>
+                    <p class="completion-graph-sub">Company Value ($B) — 2007 to 2013</p>
+                </div>
+                <div class="completion-legend">
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background:#D4AF37;"></div>
+                        <span>Your CEO Path</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background:#DC143C;"></div>
+                        <span>Actual Nokia History</span>
+                    </div>
+                </div>
+                <div style="position:relative; height: 360px; margin-top: 10px;">
+                    <canvas id="finalComparisonChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Score Card -->
+            <div class="score-card-grid">
+                <div class="score-card">
+                    <div class="score-card-icon">📊</div>
+                    <div class="score-card-label">Your Final Value</div>
+                    <div class="score-card-value" id="userFinalValue">—</div>
+                </div>
+                <div class="score-card">
+                    <div class="score-card-icon">📉</div>
+                    <div class="score-card-label">Actual Final Value</div>
+                    <div class="score-card-value" style="color:#DC143C;">$7.2B</div>
+                </div>
+                <div class="score-card">
+                    <div class="score-card-icon">⚡</div>
+                    <div class="score-card-label">Your Advantage</div>
+                    <div class="score-card-value" id="userDelta">—</div>
+                </div>
+            </div>
+
+            <!-- Key Learnings -->
+            <div class="key-learnings-final">
+                <h3 class="kl-title">🎓 Key Learnings: What This Simulation Teaches</h3>
+                <p class="kl-intro">These insights are drawn from Nokia's real strategic journey — and from the choices you made as CEO.</p>
+
+                <div class="kl-grid" id="keyLearningsGrid">
+                    <!-- Injected dynamically -->
+                </div>
+
+                <!-- Universal learnings -->
+                <div class="kl-universal">
+                    <h4 class="kl-universal-title"><span class="title-bolt">⚡</span>Universal Principles of Platform Strategy</h4>
+                    <div class="kl-universal-grid">
+                        <div class="kl-universal-card">
+                            <div class="kl-u-card-top"><div class="kl-u-num">01</div><div class="kl-u-icon">📱</div></div>
+                            <div class="kl-u-title">Platform shifts redefine entire industries overnight.</div>
+                            <div class="kl-u-text">The iPhone didn't just create a better phone — it created a new computing platform. Nokia had 40% market share in 2007, 3% by 2013. Platform transitions are existential, not incremental.</div>
+                        </div>
+                        <div class="kl-universal-card">
+                            <div class="kl-u-card-top"><div class="kl-u-num">02</div><div class="kl-u-icon">⚙️</div></div>
+                            <div class="kl-u-title">Software eats hardware in platform wars.</div>
+                            <div class="kl-u-text">Nokia's hardware was superior to early iPhones in battery, durability, and camera quality. But iOS's app ecosystem and user experience made hardware specs irrelevant. Software creates lock-in; hardware doesn't.</div>
+                        </div>
+                        <div class="kl-universal-card">
+                            <div class="kl-u-card-top"><div class="kl-u-num">03</div><div class="kl-u-icon">👨‍💻</div></div>
+                            <div class="kl-u-title">Developer ecosystems are the real competitive moat.</div>
+                            <div class="kl-u-text">iOS launched with 500 apps, grew to 100,000+ in 2 years. Android followed the same path. Windows Phone never hit critical mass. Developers choose platforms with scale — creating a winner-take-most dynamic.</div>
+                        </div>
+                        <div class="kl-universal-card">
+                            <div class="kl-u-card-top"><div class="kl-u-num">04</div><div class="kl-u-icon">⏱️</div></div>
+                            <div class="kl-u-title">Organizational inertia kills faster than bad strategy.</div>
+                            <div class="kl-u-text">Nokia saw the iPhone threat but couldn't reorganize fast enough. Symbian teams resisted change. Board debates dragged on. Bureaucracy in crisis is more dangerous than being wrong — decisiveness matters more than perfection.</div>
+                        </div>
+                        <div class="kl-universal-card">
+                            <div class="kl-u-card-top"><div class="kl-u-num">05</div><div class="kl-u-icon">🔄</div></div>
+                            <div class="kl-u-title">Switching costs determine platform stickiness.</div>
+                            <div class="kl-u-text">Moving from iPhone to Android (or reverse) means losing apps, data, accessories, muscle memory. High switching costs locked users into iOS/Android early. Nokia/Windows Phone had no lock-in mechanism — making customer acquisition a treadmill.</div>
+                        </div>
+                        <div class="kl-universal-card">
+                            <div class="kl-u-card-top"><div class="kl-u-num">06</div><div class="kl-u-icon">🎯</div></div>
+                            <div class="kl-u-title">Second-mover disadvantage is real in platform markets.</div>
+                            <div class="kl-u-text">Network effects compound early leads. By 2010, iOS and Android had critical mass in developers and users. Late entrants (Windows Phone, BlackBerry 10) faced an insurmountable catch-up game. Timing is everything in platforms.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 20px; margin-top: 40px; justify-content: center; flex-wrap: wrap;">
+                <button class="analysis-reveal-btn" onclick="location.reload()">🔄 Restart Simulation</button>
+                <button class="analysis-reveal-btn" onclick="window.location.href='companies.html'">🚪 EXIT</button>
+            </div>
+        </div>
+        <!-- /page-completion -->
+
+    </div>
+
+    <script>
+        // Financial impact data for each decision
+        const financialData = {
+            1: {
+                A: {
+                    cash: 12.0, cashChange: 'negative', cashSubtext: '€3B OS development investment',
+                    debt: 3.0, debtChange: 'negative', debtSubtext: '€1B debt for R&D',
+                    marketShare: 43, marketShareChange: 'positive', marketShareSubtext: 'Smartphone innovation gains',
+                    arpu: 185, arpuChange: 'positive', arpuSubtext: 'Premium smartphone revenue',
+                    rating: 'A', ratingDesc: 'Bold smartphone OS investment positions Nokia for touchscreen era.',
+                    shortTerm: 'High Cost', longTerm: 'Innovation Edge',
+                    impact: 'Building modern touchscreen OS from scratch costs €3B over 3 years. Competes with iOS on user experience. Attracts developer ecosystem. Secures Nokia position in smartphone revolution. High risk but essential for survival.'
+                },
+                B: {
+                    cash: 14.0, cashChange: 'negative', cashSubtext: '€1B Symbian upgrades',
+                    debt: 2.0, debtChange: 'neutral', debtSubtext: 'Stable debt levels',
+                    marketShare: 37, marketShareChange: 'negative', marketShareSubtext: 'Gradual market erosion',
+                    arpu: 165, arpuChange: 'neutral', arpuSubtext: 'Legacy device revenue',
+                    rating: 'B', ratingDesc: 'Incremental Symbian improvements delay but cannot stop decline.',
+                    shortTerm: 'Stable Revenue', longTerm: 'Tech Gap',
+                    impact: 'Symbian upgrades (S60v5, Symbian^3) add touchscreen support but remain inferior to iOS. Development complexity increases. Third-party developers abandon platform. Market share erodes from 40% to 22% by 2010.'
+                },
+                C: {
+                    cash: 15.0, cashChange: 'positive', cashSubtext: 'Minimal smartphone investment',
+                    debt: 2.0, debtChange: 'neutral', debtSubtext: 'No new debt',
+                    marketShare: 40, marketShareChange: 'neutral', marketShareSubtext: 'Feature phone dominance maintained',
+                    arpu: 95, arpuChange: 'negative', arpuSubtext: 'Low-end device mix',
+                    rating: 'C', ratingDesc: 'Feature phone focus protects margins but misses smartphone wave.',
+                    shortTerm: 'Safe Profit', longTerm: 'Market Decline',
+                    impact: 'Nokia maintains 40% global market share in feature phones. Strong emerging market position. But smartphone segment grows from 10% to 40% of market 2007-2010. Nokia relegated to low-margin basic phones.'
+                }
+            },
+            2: {
+                A: {
+                    cash: 13.0, cashChange: 'negative', cashSubtext: '€1B Android licensing',
+                    debt: 2.0, debtChange: 'neutral', debtSubtext: 'No additional debt',
+                    marketShare: 38, marketShareChange: 'positive', marketShareSubtext: 'Android ecosystem gains',
+                    arpu: 210, arpuChange: 'positive', arpuSubtext: 'Competitive smartphone ASP',
+                    rating: 'A', ratingDesc: 'Android partnership provides instant ecosystem competitiveness.',
+                    shortTerm: 'Fast Entry', longTerm: 'Low Control',
+                    impact: 'Licensing Android gives immediate access to 100,000+ apps. Hardware expertise + Android software = market leader. Lose OS control but gain speed. Samsung path: Android enabled them to dominate. Nokia could have done same.'
+                },
+                B: {
+                    cash: 11.0, cashChange: 'negative', cashSubtext: '€2B MeeGo development',
+                    debt: 3.0, debtChange: 'negative', debtSubtext: '€1B development loan',
+                    marketShare: 32, marketShareChange: 'negative', marketShareSubtext: 'Slow execution hurts share',
+                    arpu: 175, arpuChange: 'neutral', arpuSubtext: 'Mixed device portfolio',
+                    rating: 'B', ratingDesc: 'MeeGo development ambitious but slow versus iOS/Android.',
+                    shortTerm: 'Heavy Spending', longTerm: 'Strategic Control',
+                    impact: 'MeeGo (Linux-based) offers full control but takes 3+ years. First device launches 2011—4 years after iPhone. Developer support minimal. €2B investment yields only N9 device before abandonment.'
+                },
+                C: {
+                    cash: 14.0, cashChange: 'positive', cashSubtext: '€1B cost reduction',
+                    debt: 2.0, debtChange: 'neutral', debtSubtext: 'Stable debt',
+                    marketShare: 28, marketShareChange: 'negative', marketShareSubtext: 'Rapid market share loss',
+                    arpu: 140, arpuChange: 'negative', arpuSubtext: 'Price pressure from competitors',
+                    rating: 'C', ratingDesc: 'Cost cuts improve profitability but accelerate strategic decline.',
+                    shortTerm: 'Cash Stability', longTerm: 'Innovation Weakness',
+                    impact: 'R&D cuts save €1B annually. Symbian stagnates. iOS App Store reaches 500,000 apps, Symbian has 5,000. Developer exodus accelerates. Smartphone market share drops from 32% to 14% by 2010.'
+                }
+            },
+            3: {
+                A: {
+                    cash: 14.0, cashChange: 'positive', cashSubtext: '€1B Microsoft upfront payment',
+                    debt: 2.5, debtChange: 'neutral', debtSubtext: 'Partnership capital',
+                    marketShare: 18, marketShareChange: 'negative', marketShareSubtext: 'Windows Phone struggles',
+                    arpu: 185, arpuChange: 'neutral', arpuSubtext: 'Lumia device pricing',
+                    rating: 'C', ratingDesc: 'Microsoft partnership provides funding but Windows Phone lacks ecosystem.',
+                    shortTerm: 'Financial Support', longTerm: 'Ecosystem Risk',
+                    impact: 'Stephen Elop deal 2011: Microsoft pays €1B+ in platform support. But Windows Phone has only 20,000 apps vs iOS 500,000. Market share collapses 18% to 3%. "Burning platform" memo destroys Symbian value before WP ready.'
+                },
+                B: {
+                    cash: 12.0, cashChange: 'negative', cashSubtext: '€1B Android transition',
+                    debt: 2.0, debtChange: 'neutral', debtSubtext: 'Self-funded transition',
+                    marketShare: 28, marketShareChange: 'positive', marketShareSubtext: 'Android market recovery',
+                    arpu: 220, arpuChange: 'positive', arpuSubtext: 'Premium Android devices',
+                    rating: 'A', ratingDesc: 'Full Android commitment enables ecosystem competitiveness.',
+                    shortTerm: 'Market Re-entry', longTerm: 'Low Differentiation',
+                    impact: 'Switching to Android in 2010 gives access to mature ecosystem. Nokia hardware + Android = credible iPhone alternative. Could capture 25-30% smartphone market. Differentiation through hardware design (PureView cameras, build quality).'
+                },
+                C: {
+                    cash: 10.0, cashChange: 'negative', cashSubtext: '€2B continued Symbian investment',
+                    debt: 3.0, debtChange: 'negative', debtSubtext: '€1B additional borrowing',
+                    marketShare: 12, marketShareChange: 'negative', marketShareSubtext: 'Platform abandonment accelerates',
+                    arpu: 145, arpuChange: 'negative', arpuSubtext: 'Fire-sale pricing',
+                    rating: 'D', ratingDesc: 'Continued Symbian investment delays inevitable but increases cost.',
+                    shortTerm: 'Stability Attempt', longTerm: 'Decline Risk',
+                    impact: 'Doubling down on Symbian burns €2B on obsolete platform. Developer exodus continues. Users migrate to iOS/Android. Market share collapses to single digits. Symbian discontinued 2012 with massive write-downs.'
+                }
+            },
+            4: {
+                A: {
+                    cash: 11.0, cashChange: 'positive', cashSubtext: '€3B loan secured',
+                    debt: 6.0, debtChange: 'negative', debtSubtext: '€3B survival loan',
+                    marketShare: 8, marketShareChange: 'negative', marketShareSubtext: 'Market position weakening',
+                    arpu: 175, arpuChange: 'neutral', arpuSubtext: 'Lumia pricing maintained',
+                    rating: 'C', ratingDesc: 'Large loan provides liquidity but increases debt burden.',
+                    shortTerm: 'Liquidity Boost', longTerm: 'Debt Pressure',
+                    impact: '€3B loan from consortium provides 12-18 months runway. Interest payments €300M annually. Buys time for Windows Phone ramp but if sales fail, debt accelerates collapse. Cash burn rate €1B per quarter.'
+                },
+                B: {
+                    cash: 12.0, cashChange: 'positive', cashSubtext: '€2B asset sales (HERE Maps, Networks)',
+                    debt: 2.5, debtChange: 'neutral', debtSubtext: 'No new debt',
+                    marketShare: 6, marketShareChange: 'negative', marketShareSubtext: 'Core focus on mobile',
+                    arpu: 165, arpuChange: 'negative', arpuSubtext: 'Competitive pressure',
+                    rating: 'B', ratingDesc: 'Asset sales strengthen balance sheet at cost of strategic options.',
+                    shortTerm: 'Cash Relief', longTerm: 'Reduced Scale',
+                    impact: 'Selling Nokia Siemens Networks (later) and licensing HERE Maps generates €2B. Reduces complexity but loses valuable assets. Networks division sold 2013 for €1.7B. Maps worth €2-3B. Loses vertical integration.'
+                },
+                C: {
+                    cash: 11.0, cashChange: 'positive', cashSubtext: '€1B from 18,000 job cuts',
+                    debt: 2.5, debtChange: 'neutral', debtSubtext: 'Stable debt',
+                    marketShare: 5, marketShareChange: 'negative', marketShareSubtext: 'Continued erosion',
+                    arpu: 155, arpuChange: 'negative', arpuSubtext: 'Discount positioning',
+                    rating: 'C', ratingDesc: 'Aggressive restructuring reduces costs but damages morale.',
+                    shortTerm: 'Cost Saving', longTerm: 'Reputation Risk',
+                    impact: 'Cutting 18,000 employees (20% of workforce) saves €1B annually. Factory closures in Finland, Germany, Canada. Brain drain as top talent leaves. Loses institutional knowledge. Short-term fix but long-term damage to innovation capacity.'
+                }
+            },
+            5: {
+                A: {
+                    cash: 7.2, cashChange: 'positive', cashSubtext: '€5B Microsoft acquisition payment',
+                    debt: 0, debtChange: 'positive', debtSubtext: '€2B debt cleared',
+                    marketShare: 0, marketShareChange: 'negative', marketShareSubtext: 'Mobile division sold',
+                    arpu: 0, arpuChange: 'negative', arpuSubtext: 'No longer in mobile',
+                    rating: 'B', ratingDesc: 'Controlled exit preserves shareholder value and enables Networks focus.',
+                    shortTerm: 'Cash Security', longTerm: 'Market Exit',
+                    impact: 'Microsoft pays €7.2B for Nokia mobile division (2013). Includes patents, factories, 32,000 employees. Nokia exits phones after 150 years. Cash enables Networks focus. Microsoft writes off €7.6B by 2015—deal fails spectacularly.'
+                },
+                B: {
+                    cash: 3.0, cashChange: 'negative', cashSubtext: '€2B turnaround investment',
+                    debt: 3.0, debtChange: 'negative', debtSubtext: '€1B restructuring debt',
+                    marketShare: 2, marketShareChange: 'negative', marketShareSubtext: 'Near-zero market presence',
+                    arpu: 125, arpuChange: 'negative', arpuSubtext: 'Budget device only',
+                    rating: 'D', ratingDesc: 'Independent continuation extremely high risk with likely bankruptcy.',
+                    shortTerm: 'High Risk', longTerm: 'Bankruptcy Risk',
+                    impact: 'Continuing alone requires €2B additional investment. Windows Phone market share stuck at 3%. Cash burn €800M quarterly. Bankruptcy likely by 2014. Loses €3B in market value. No buyer at low valuation. Brand destruction.'
+                },
+                C: {
+                    cash: 9.0, cashChange: 'positive', cashSubtext: '€2B from strategic partner',
+                    debt: 1.5, debtChange: 'positive', debtSubtext: '€1B debt reduction',
+                    marketShare: 8, marketShareChange: 'neutral', marketShareSubtext: 'Partner ecosystem access',
+                    arpu: 195, arpuChange: 'positive', arpuSubtext: 'Co-branded premium devices',
+                    rating: 'B', ratingDesc: 'Technology partnership provides capital and shared risk.',
+                    shortTerm: 'Stability', longTerm: 'Uncertain Future',
+                    impact: 'Merger with HTC, Sony, or Chinese OEM (Xiaomi, Huawei) shares R&D costs. €2B capital injection. Combined scale 12-15% market share. Shares manufacturing, supply chain. Uncertain synergies. Cultural integration risk.'
+                }
+            }
+        };
+
+        let decisionHistory = [];
+
+        /* ── Page-transition helpers ── */
+        function transitionTo(inId) {
+            // hide every page/analysis-page that is currently active
+            document.querySelectorAll('.page.active, .analysis-page.active').forEach(el => {
+                el.classList.add('exit');
+                el.addEventListener('animationend', () => {
+                    el.classList.remove('active', 'exit');
+                }, { once: true });
+            });
+
+            // Show the target page after a tiny delay so the exit plays first
+            setTimeout(() => {
+                const target = document.getElementById(inId);
+                if (target) {
+                    target.classList.add('active');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            }, 300);
+        }
+
+        function selectOption(decisionNum, option) {
+            decisionHistory.push({decision: decisionNum, option: option});
+            
+            // Save to localStorage for completion page
+            localStorage.setItem('decision' + decisionNum, option);
+
+            const data = financialData[decisionNum][option];
+
+            // Update financial metrics first (they're already in the DOM)
+            updateBalanceSheet(decisionNum, data);
+
+            // Render the performance chart for this decision + chosen option
+            renderChart(decisionNum, option);
+
+            // Transition to the analysis page for this decision
+            transitionTo('page-analysis' + decisionNum);
+        }
+
+        function updateBalanceSheet(decisionNum, data) {
+            // Animate cards
+            const cards = document.querySelectorAll(`#balanceSheet${decisionNum} .metric-card`);
+            cards.forEach(card => {
+                card.classList.remove('updated');
+                setTimeout(() => card.classList.add('updated'), 100);
+            });
+
+            // Update cash
+            document.getElementById(`cashValue${decisionNum}`).textContent = `€${data.cash.toFixed(1)}B`;
+            document.getElementById(`cashChange${decisionNum}`).textContent =
+                data.cashChange === 'positive' ? '↑' : data.cashChange === 'negative' ? '↓' : '→';
+            document.getElementById(`cashChange${decisionNum}`).className = `metric-change ${data.cashChange}`;
+            document.getElementById(`cashSubtext${decisionNum}`).textContent = data.cashSubtext;
+
+            // Update debt
+            document.getElementById(`debtValue${decisionNum}`).textContent = `€${data.debt.toFixed(1)}B`;
+            document.getElementById(`debtChange${decisionNum}`).textContent =
+                data.debtChange === 'positive' ? '↓' : data.debtChange === 'negative' ? '↑' : '→';
+            document.getElementById(`debtChange${decisionNum}`).className =
+                `metric-change ${data.debtChange === 'positive' ? 'positive' : data.debtChange === 'negative' ? 'negative' : 'neutral'}`;
+            document.getElementById(`debtSubtext${decisionNum}`).textContent = data.debtSubtext;
+
+            // Update market share
+            document.getElementById(`marketShareValue${decisionNum}`).textContent = `${data.marketShare}%`;
+            document.getElementById(`marketShareChange${decisionNum}`).textContent =
+                data.marketShareChange === 'positive' ? '↑' : data.marketShareChange === 'negative' ? '↓' : '→';
+            document.getElementById(`marketShareChange${decisionNum}`).className = `metric-change ${data.marketShareChange}`;
+            document.getElementById(`marketShareSubtext${decisionNum}`).textContent = data.marketShareSubtext;
+
+            // Update ARPU
+            document.getElementById(`arpuValue${decisionNum}`).textContent = `€${data.arpu}`;
+            document.getElementById(`arpuChange${decisionNum}`).textContent =
+                data.arpuChange === 'positive' ? '↑' : data.arpuChange === 'negative' ? '↓' : '→';
+            document.getElementById(`arpuChange${decisionNum}`).className = `metric-change ${data.arpuChange}`;
+            document.getElementById(`arpuSubtext${decisionNum}`).textContent = data.arpuSubtext;
+
+            // Update rating
+            const ratingBadge = document.getElementById(`ratingBadge${decisionNum}`);
+            ratingBadge.textContent = data.rating;
+            ratingBadge.className = `rating-badge rating-${data.rating}`;
+            document.getElementById(`ratingDescription${decisionNum}`).textContent = data.ratingDesc;
+
+            // Show impact
+            document.getElementById(`impactText${decisionNum}`).textContent = data.impact;
+            document.getElementById(`impactAlert${decisionNum}`).style.display = 'block';
+
+            // Animate the entire balance sheet with smooth fade-in and slide-up
+            const balanceSheet = document.getElementById(`balanceSheet${decisionNum}`);
+            balanceSheet.style.opacity = '0';
+            balanceSheet.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                balanceSheet.style.transition = 'all 0.6s ease-out';
+                balanceSheet.style.opacity = '1';
+                balanceSheet.style.transform = 'translateY(0)';
+            }, 400);
+        }
+
+        function showDecision(num) {
+            transitionTo('page-decision' + num);
+        }
+
+        // ── Chart Data per Decision ──────────────────────────────────────
+        // Each decision has labels (x-axis quarters), and A/B/C series data.
+        // Metric varies by decision to make each chart meaningful.
+        const chartData = {
+            1: {
+                metric: 'Smartphone Market Share (%)',
+                labels: ['Q1 2007','Q3 2007','Q1 2008','Q3 2008','Q1 2009','Q3 2009','Q1 2010'],
+                options: {
+                    A: { label: 'A – Invest in new smartphone OS',  color: '#4fc3f7', data: [40, 41, 43, 46, 49, 53, 58] },
+                    B: { label: 'B – Improve existing Symbian',     color: '#81c784', data: [40, 39, 37, 34, 30, 25, 20] },
+                    C: { label: 'C – Focus on feature phones',      color: '#ffb74d', data: [40, 38, 34, 29, 23, 17, 12] }
+                }
+            },
+            2: {
+                metric: 'Operating Profit Margin (%)',
+                labels: ['Q1 2008','Q3 2008','Q1 2009','Q3 2009','Q1 2010','Q3 2010','Q1 2011'],
+                options: {
+                    A: { label: 'A – Partner with Google (Android)',     color: '#4fc3f7', data: [18, 19, 21, 24, 27, 30, 34] },
+                    B: { label: 'B – Build stronger in-house system',    color: '#81c784', data: [18, 17, 15, 13, 11, 9, 7] },
+                    C: { label: 'C – Cut costs & defend margins',        color: '#ffb74d', data: [18, 19, 20, 18, 15, 11, 6] }
+                }
+            },
+            3: {
+                metric: 'Company Valuation (€B)',
+                labels: ['Q1 2010','Q3 2010','Q1 2011','Q3 2011','Q1 2012','Q3 2012','Q1 2013'],
+                options: {
+                    A: { label: 'A – Partner with Microsoft',         color: '#4fc3f7', data: [75, 65, 52, 40, 30, 22, 15] },
+                    B: { label: 'B – Fully switch to Android',        color: '#81c784', data: [75, 85, 98, 115, 135, 160, 190] },
+                    C: { label: 'C – Continue Symbian investment',    color: '#ffb74d', data: [75, 68, 58, 45, 32, 20, 12] }
+                }
+            },
+            4: {
+                metric: 'Cash & Liquidity (€B)',
+                labels: ['Q1 2011','Q3 2011','Q1 2012','Q3 2012','Q1 2013','Q3 2013'],
+                options: {
+                    A: { label: 'A – Take large survival loan',       color: '#4fc3f7', data: [8, 11, 13, 12.5, 11, 8.5] },
+                    B: { label: 'B – Sell non-core assets',           color: '#81c784', data: [8, 10, 11, 11.5, 11.2, 10.5] },
+                    C: { label: 'C – Major restructuring',            color: '#ffb74d', data: [8, 9, 9.5, 9.8, 9.5, 9] }
+                }
+            },
+            5: {
+                metric: 'Mobile Division Value (€B)',
+                labels: ['Q1 2012','Q2 2012','Q3 2012','Q4 2012','Q1 2013','Q2 2013','Q3 2013'],
+                options: {
+                    A: { label: 'A – Sell to Microsoft (€7.2B)',      color: '#4fc3f7', data: [18, 15, 12, 10, 8.5, 7.8, 7.2] },
+                    B: { label: 'B – Continue independently',         color: '#81c784', data: [18, 14, 10, 7, 5, 3.5, 2] },
+                    C: { label: 'C – Merge with tech firm',           color: '#ffb74d', data: [18, 17, 16.5, 16, 15.5, 15, 14.5] }
+                }
+            }
+        };
+
+        // Store Chart.js instances so we can destroy & re-render if needed
+        const chartInstances = {};
+
+        function renderChart(decisionNum, chosenOption) {
+            const cfg = chartData[decisionNum];
+            const ctx = document.getElementById('chart' + decisionNum).getContext('2d');
+
+            // Destroy existing instance if any
+            if (chartInstances[decisionNum]) {
+                chartInstances[decisionNum].destroy();
+            }
+
+            const datasets = ['A', 'B', 'C'].map(opt => {
+                const isChosen = opt === chosenOption;
+                const info = cfg.options[opt];
+                return {
+                    label: info.label,
+                    data: info.data,
+                    borderColor: isChosen ? info.color : info.color + '55',
+                    backgroundColor: isChosen ? info.color + '18' : 'transparent',
+                    borderWidth: isChosen ? 3.5 : 1.5,
+                    pointRadius: isChosen ? 6 : 3,
+                    pointHoverRadius: isChosen ? 9 : 5,
+                    pointBackgroundColor: isChosen ? info.color : info.color + '55',
+                    pointBorderColor: isChosen ? '#fff' : 'transparent',
+                    pointBorderWidth: isChosen ? 2 : 0,
+                    tension: 0.42,
+                    fill: isChosen,
+                    order: isChosen ? 0 : 1
+                };
+            });
+
+            chartInstances[decisionNum] = new Chart(ctx, {
+                type: 'line',
+                data: { labels: cfg.labels, datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    animation: {
+                        duration: 2000,
+                        easing: 'easeInOutQuart'
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(10,14,30,0.95)',
+                            borderColor: 'rgba(212,175,55,0.5)',
+                            borderWidth: 1,
+                            titleColor: '#D4AF37',
+                            bodyColor: '#E8E8E8',
+                            padding: 12,
+                            callbacks: {
+                                label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y}`
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: 'rgba(255,255,255,0.06)' },
+                            ticks: { color: '#aaa', font: { size: 11 } }
+                        },
+                        y: {
+                            grid: { color: 'rgba(255,255,255,0.06)' },
+                            ticks: { color: '#aaa', font: { size: 11 } },
+                            title: {
+                                display: true,
+                                text: cfg.metric,
+                                color: '#D4AF37',
+                                font: { size: 12, weight: '600' }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Build custom legend
+            const legendEl = document.getElementById('legend' + decisionNum);
+            legendEl.innerHTML = '';
+            ['A', 'B', 'C'].forEach(opt => {
+                const info = cfg.options[opt];
+                const isChosen = opt === chosenOption;
+                const item = document.createElement('div');
+                item.className = 'legend-item' + (isChosen ? ' chosen' : '');
+                item.innerHTML = `<span class="legend-dot" style="background:${info.color}"></span>
+                    ${isChosen ? '★ ' : ''}${info.label}${isChosen ? ' (Your Choice)' : ''}`;
+                legendEl.appendChild(item);
+            });
+        }
+
+        // ── Completion Page Logic ──────────────────────────────────────
+        let userDecisions = {};
+        let finalChart = null;
+
+        function showCompletionPage() {
+            // Hide all analysis pages
+            for (let i = 1; i <= 5; i++) {
+                const page = document.getElementById('page-analysis' + i);
+                if (page) page.classList.remove('active');
+            }
+
+            // Show completion page
+            const completionPage = document.getElementById('page-completion');
+            completionPage.classList.add('active');
+
+            // Build decision summary chips
+            const chipLabels = {
+                1: 'iPhone Launch', 
+                2: 'OS Strategy', 
+                3: 'Ecosystem Choice', 
+                4: 'Microsoft Partnership', 
+                5: 'Final Decision'
+            };
+            const optionFull = {A: 'Option A', B: 'Option B', C: 'Option C'};
+            let chipsHTML = '';
+            for (let i = 1; i <= 5; i++) {
+                const choice = localStorage.getItem('decision' + i) || 'C';
+                userDecisions[i] = choice;
+                chipsHTML += `<div class="decision-chip">D${i}: ${chipLabels[i]} <span>${optionFull[choice]}</span></div>`;
+            }
+            document.getElementById('decisionSummary').innerHTML = chipsHTML;
+
+            // Calculate final values
+            const userPath = buildUserPath(userDecisions);
+            const userFinal = userPath[userPath.length - 1];
+            const actualFinal = 7.2; // Nokia mobile sold for $7.2B to Microsoft
+            const delta = userFinal - actualFinal;
+
+            document.getElementById('userFinalValue').textContent = '$' + userFinal.toFixed(2) + 'B';
+            document.getElementById('userDelta').textContent = (delta >= 0 ? '+' : '') + '$' + Math.abs(delta).toFixed(2) + 'B';
+            document.getElementById('userDelta').style.color = delta >= 0 ? '#4CAF50' : '#DC143C';
+
+            // Render comparison chart with animation
+            setTimeout(() => {
+                if (finalChart) finalChart.destroy();
+                const ctx = document.getElementById('finalComparisonChart').getContext('2d');
+                
+                // Actual Nokia history (simplified timeline)
+                const actualHistory = [110, 95, 75, 55, 35, 20, 12, 7.2];
+                const labels = ['2007', '2008', '2009', '2010', '2011', '2012', '2013 Q1', '2013 Q3'];
+
+                // Start with only first point visible, then animate to show full path
+                const fullUserPath = userPath.slice();
+                const animatedUserPath = [userPath[0]]; // Start with just 2007
+
+                finalChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Your CEO Path',
+                                data: animatedUserPath,
+                                borderColor: '#D4AF37',
+                                backgroundColor: 'rgba(212, 175, 55, 0.1)',
+                                borderWidth: 4,
+                                tension: 0.4,
+                                fill: true,
+                                pointRadius: 6,
+                                pointBackgroundColor: '#D4AF37',
+                                pointBorderColor: '#1a1a1a',
+                                pointBorderWidth: 2
+                            },
+                            {
+                                label: 'Actual Nokia History',
+                                data: actualHistory,
+                                borderColor: '#DC143C',
+                                backgroundColor: 'transparent',
+                                borderWidth: 3,
+                                borderDash: [8, 4],
+                                tension: 0.4,
+                                fill: false,
+                                pointRadius: 4,
+                                pointBackgroundColor: '#DC143C',
+                                pointBorderColor: '#1a1a1a',
+                                pointBorderWidth: 2
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: 'rgba(42, 42, 42, 0.95)',
+                                titleColor: '#D4AF37',
+                                bodyColor: '#F5F5DC',
+                                borderColor: '#DC143C',
+                                borderWidth: 1,
+                                padding: 12,
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.dataset.label + ': $' + context.parsed.y.toFixed(1) + 'B';
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                                ticks: {
+                                    color: '#F5F5DC',
+                                    callback: function(value) {
+                                        return '$' + value + 'B';
+                                    }
+                                }
+                            },
+                            x: {
+                                grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                                ticks: { color: '#F5F5DC' }
+                            }
+                        },
+                        animation: {
+                            duration: 0 // Disable default animation, we'll do manual
+                        }
+                    }
+                });
+
+                // Animate the user path point by point
+                let currentPoint = 1;
+                const animationInterval = setInterval(() => {
+                    if (currentPoint < fullUserPath.length) {
+                        animatedUserPath.push(fullUserPath[currentPoint]);
+                        finalChart.data.datasets[0].data = animatedUserPath.slice();
+                        finalChart.update('none'); // Update without animation for smooth progression
+                        currentPoint++;
+                    } else {
+                        clearInterval(animationInterval);
+                        // Final update with animation
+                        finalChart.update({
+                            duration: 800,
+                            easing: 'easeInOutQuart'
+                        });
+                    }
+                }, 300); // 300ms between each point
+            }, 400);
+
+            // Inject key learnings
+            injectKeyLearnings(userDecisions);
+        }
+
+        function buildUserPath(decisions) {
+            // Timeline: 2007, 2008, 2009, 2010, 2011, 2012, 2013 Q1, 2013 Q3
+            // Starting value in 2007: $110B (Nokia's peak market cap)
+            
+            // Decision impact matrices for each choice
+            const decisionImpacts = {
+                1: { // Decision 1: iPhone Launch Response (2007) - affects 2007-2009
+                    A: [110, 120, 140, 170],      // Abandon Symbian, adopt Android early - growth
+                    B: [110, 105, 90, 70],        // Double down on Symbian - decline
+                    C: [110, 95, 75, 55]          // Wait and observe - moderate decline
+                },
+                2: { // Decision 2: OS Strategy (2008-09) - affects 2009-2011 
+                    A: [1.0, 1.3, 1.8, 2.3],      // Build MeeGo aggressively - growth multipliers
+                    B: [1.0, 1.1, 1.25, 1.4],     // License Android - moderate growth
+                    C: [1.0, 0.85, 0.70, 0.55]    // Continue Symbian - decline
+                },
+                3: { // Decision 3: Ecosystem Choice (2010) - affects 2010-2012
+                    A: [1.0, 0.95, 0.85, 0.75],   // Partner with Microsoft (Windows Phone) - decline
+                    B: [1.0, 1.2, 1.5, 1.8],      // Full Android commitment - growth
+                    C: [1.0, 0.90, 0.75, 0.60]    // Maintain independence (MeeGo) - decline
+                },
+                4: { // Decision 4: Microsoft Deal Terms (2011) - affects 2011-2013
+                    A: [1.0, 0.65, 0.45, 0.30],   // Accept exclusivity deal - steep decline
+                    B: [1.0, 0.80, 0.70, 0.65],   // Negotiate dual-track (keep options) - moderate decline
+                    C: [1.0, 1.05, 1.15, 1.25]    // Reject Microsoft, go full Android - growth
+                },
+                5: { // Decision 5: Endgame (2012-13) - affects 2012-2013
+                    A: [1.0, 0.85, 0.65],         // Sell mobile division to Microsoft - controlled exit
+                    B: [1.0, 0.75, 0.55],         // Liquidate and exit mobile - faster decline
+                    C: [1.0, 1.10, 1.25]          // Pivot to Android flagship - growth
+                }
+            };
+
+            // Build the path step by step
+            let path = [];
+            
+            // Get base path from Decision 1 (2007-2009): indices 0-3
+            const d1Path = decisionImpacts[1][decisions[1]];
+            path = [...d1Path]; // 2007, 2008, 2009, 2010 start
+            
+            // Apply Decision 2 multipliers (2009-2011): modify indices 2-3 and add index 4
+            const d2Mult = decisionImpacts[2][decisions[2]];
+            for (let i = 0; i < 2; i++) {
+                if (path[2 + i]) {
+                    path[2 + i] = Math.round(path[2 + i] * d2Mult[i]);
+                }
+            }
+            const baseFor2011 = path[3] || 55;
+            path.push(Math.round(baseFor2011 * d2Mult[2])); // 2011
+            
+            // Apply Decision 3 multipliers (2010-2012): modify indices 3-4 and add index 5
+            const d3Mult = decisionImpacts[3][decisions[3]];
+            for (let i = 0; i < 2; i++) {
+                if (path[3 + i]) {
+                    path[3 + i] = Math.round(path[3 + i] * d3Mult[i]);
+                }
+            }
+            const baseFor2012 = path[4] || 35;
+            path.push(Math.round(baseFor2012 * d3Mult[2])); // 2012
+            
+            // Apply Decision 4 multipliers (2011-2013): modify indices 4-5 and add indices 6
+            const d4Mult = decisionImpacts[4][decisions[4]];
+            for (let i = 0; i < 2; i++) {
+                if (path[4 + i]) {
+                    path[4 + i] = Math.round(path[4 + i] * d4Mult[i]);
+                }
+            }
+            const baseFor2013Q1 = path[5] || 20;
+            path.push(Math.round(baseFor2013Q1 * d4Mult[2])); // 2013 Q1
+            
+            // Apply Decision 5 multipliers (2012-2013): modify indices 5-7
+            const d5Mult = decisionImpacts[5][decisions[5]];
+            for (let i = 0; i < d5Mult.length; i++) {
+                const idx = 5 + i;
+                if (idx < path.length) {
+                    path[idx] = Math.round(path[idx] * d5Mult[i]);
+                } else {
+                    const prevValue = path[path.length - 1] || 12;
+                    path.push(Math.round(prevValue * d5Mult[i]));
+                }
+            }
+            
+            // Ensure we have exactly 8 data points (2007, 2008, 2009, 2010, 2011, 2012, 2013 Q1, 2013 Q3)
+            while (path.length < 8) {
+                path.push(path[path.length - 1]);
+            }
+            
+            // Round all values to 1 decimal place
+            path = path.slice(0, 8).map(v => Math.round(v * 10) / 10);
+            
+            return path;
+        }
+
+        function injectKeyLearnings(dec) {
+            // Fixed Key Learnings for Nokia
+            const learnings = [
+                {
+                    pos: false, icon: '⚠️', cat: 'Platform Shifts',
+                    title: 'Hardware excellence cannot compensate for software weakness',
+                    text: 'Nokia built the world\'s best phone hardware but failed to recognize that the iPhone shifted competition to software ecosystems. In platform markets, controlling the OS matters more than manufacturing quality.'
+                },
+                {
+                    pos: false, icon: '⚠️', cat: 'Strategic Timing',
+                    title: 'Delaying platform decisions allows competitors to become entrenched',
+                    text: 'Nokia spent 3 years (2007-2010) debating between Symbian, MeeGo, and Windows Phone while iOS and Android built insurmountable developer ecosystems. First-mover advantage in platform wars is often decisive.'
+                },
+                {
+                    pos: true, icon: '✅', cat: 'Market Recognition',
+                    title: 'Recognizing disruption early creates optionality',
+                    text: 'Companies that acknowledged the iPhone threat in 2007-2008 had time to respond. Nokia\'s leadership initially dismissed touchscreens and app stores, losing critical years when pivots were still possible.'
+                },
+                {
+                    pos: false, icon: '⚠️', cat: 'Organizational Inertia',
+                    title: 'Past success creates institutional resistance to change',
+                    text: 'Nokia\'s 40% global market share and profitability made it difficult to justify radical shifts. Organizational inertia — "why change what\'s working?" — prevented urgent action until it was too late.'
+                },
+                {
+                    pos: true, icon: '💡', cat: 'Ecosystem Strategy',
+                    title: 'Developer ecosystems determine platform survival',
+                    text: 'iOS succeeded with 100,000 apps. Android succeeded with open licensing. Windows Phone failed despite Microsoft\'s resources because developers never committed. Platform value comes from third-party innovation, not first-party features.'
+                }
+            ];
+
+            // Render learnings
+            const grid = document.getElementById('keyLearningsGrid');
+            grid.innerHTML = learnings.map((l, i) => {
+                const cls = l.pos ? 'kl-card kl-card-positive' : 'kl-card';
+                const delay = i * 0.12;
+                return `<div class="${cls}" style="animation-delay:${delay}s">
+                    <div class="kl-card-badge">${l.icon}</div>
+                    <div class="kl-card-body">
+                        <div class="kl-card-label">${l.cat}</div>
+                        <div class="kl-card-title">${l.title}</div>
+                        <div class="kl-card-text">${l.text}</div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+    </script>
+</body>
+</html>

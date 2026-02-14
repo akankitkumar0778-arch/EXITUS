@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Choose Your Fallen Empire - EXITUS</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Space+Mono:wght@400;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --gold: #d4af37;
+    --gold-light: #f4e5b8;
+    --gold-dark: #9d7f2a;
+    --crimson: #8b0000;
+    --black: #0a0a0a;
+    --charcoal: #1a1a1a;
+    --slate: #2a2a2a;
+}
+
+body {
+    background: var(--black);
+    color: var(--gold-light);
+    font-family: 'Outfit', sans-serif;
+    overflow-x: hidden;
+    position: relative;
+    min-height: 100vh;
+}
+
+/* ANIMATED BACKGROUND */
+.background-layer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    background: radial-gradient(circle at 20% 80%, rgba(139, 0, 0, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(212, 175, 55, 0.08) 0%, transparent 50%),
+                linear-gradient(180deg, #0a0a0a 0%, #1a1a1a 100%);
+}
+
+.grid-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        linear-gradient(rgba(212, 175, 55, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(212, 175, 55, 0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    z-index: 0;
+    animation: gridPulse 8s ease-in-out infinite;
+}
+
+@keyframes gridPulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.6; }
+}
+
+/* PARTICLE SYSTEM */
+.particle {
+    position: fixed;
+    width: 3px;
+    height: 3px;
+    background: var(--gold);
+    border-radius: 50%;
+    opacity: 0;
+    animation: float 15s infinite;
+    box-shadow: 0 0 8px var(--gold);
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(100vh) translateX(0) scale(0);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.8;
+    }
+    90% {
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateY(-100vh) translateX(100px) scale(1);
+        opacity: 0;
+    }
+}
+
+.particle:nth-child(1) { left: 10%; animation-delay: 0s; }
+.particle:nth-child(2) { left: 20%; animation-delay: 2s; }
+.particle:nth-child(3) { left: 30%; animation-delay: 4s; }
+.particle:nth-child(4) { left: 40%; animation-delay: 1s; }
+.particle:nth-child(5) { left: 50%; animation-delay: 3s; }
+.particle:nth-child(6) { left: 60%; animation-delay: 5s; }
+.particle:nth-child(7) { left: 70%; animation-delay: 2.5s; }
+.particle:nth-child(8) { left: 80%; animation-delay: 4.5s; }
+.particle:nth-child(9) { left: 90%; animation-delay: 1.5s; }
+.particle:nth-child(10) { left: 15%; animation-delay: 3.5s; }
+
+.content {
+    position: relative;
+    z-index: 1;
+}
+
+/* HEADER */
+header {
+    padding: 30px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    backdrop-filter: blur(10px);
+    background: rgba(10, 10, 10, 0.5);
+    border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+    animation: slideDown 0.8s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 900;
+    letter-spacing: 3px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    position: relative;
+    text-decoration: none;
+}
+
+.logo::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+}
+
+.tagline {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    color: rgba(212, 175, 55, 0.6);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+/* PAGE FADE IN */
+@keyframes pageLoad {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+body {
+    animation: pageLoad 0.5s ease-out;
+}
+
+/* SECTION HEADER */
+.section-header {
+    text-align: center;
+    padding: 80px 20px 60px;
+    animation: fadeInUp 0.8s ease-out 0.2s backwards;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(60px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(40px, 6vw, 70px);
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 15px;
+}
+
+.section-subtitle {
+    font-family: 'Space Mono', monospace;
+    font-size: 14px;
+    color: rgba(212, 175, 55, 0.5);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
+/* COMPANIES GRID */
+.companies-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
+    padding: 0 60px 120px;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+.company-card {
+    background: linear-gradient(135deg, rgba(26, 26, 26, 0.8), rgba(42, 42, 42, 0.6));
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: 20px;
+    padding: 40px;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    opacity: 0;
+    transform: translateY(50px);
+    animation: cardReveal 0.6s ease-out forwards;
+}
+
+@keyframes cardReveal {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.company-card:nth-child(1) { animation-delay: 0.3s; }
+.company-card:nth-child(2) { animation-delay: 0.4s; }
+.company-card:nth-child(3) { animation-delay: 0.5s; }
+.company-card:nth-child(4) { animation-delay: 0.6s; }
+
+.company-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at top left, rgba(212, 175, 55, 0.1), transparent 60%);
+    opacity: 0;
+    transition: opacity 0.5s;
+}
+
+.company-card:hover::before {
+    opacity: 1;
+}
+
+.company-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    border-color: var(--gold);
+    box-shadow: 0 30px 80px rgba(212, 175, 55, 0.2);
+}
+
+.company-icon {
+    font-size: 48px;
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 25px;
+    box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+    transition: all 0.4s;
+}
+
+.company-card:hover .company-icon {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.company-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 12px;
+    letter-spacing: 1px;
+}
+
+.company-tagline {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    color: rgba(212, 175, 55, 0.6);
+    margin-bottom: 30px;
+    font-style: italic;
+}
+
+.company-stats {
+    margin-bottom: 30px;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+    font-size: 14px;
+    color: rgba(244, 229, 184, 0.8);
+    transition: all 0.3s;
+}
+
+.stat-item:hover {
+    color: var(--gold-light);
+    padding-left: 10px;
+}
+
+.stat-item:last-child {
+    border-bottom: none;
+}
+
+.stat-icon {
+    font-size: 20px;
+}
+
+.start-button {
+    width: 100%;
+    padding: 16px 32px;
+    background: transparent;
+    border: 2px solid var(--gold);
+    color: var(--gold);
+    font-family: 'Outfit', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    position: relative;
+    overflow: hidden;
+}
+
+.start-button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: var(--gold);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.5s, height 0.5s;
+}
+
+.start-button span {
+    position: relative;
+    z-index: 1;
+}
+
+.start-button:hover::before {
+    width: 300%;
+    height: 300%;
+}
+
+.start-button:hover {
+    color: var(--black);
+    border-color: var(--gold);
+    box-shadow: 0 10px 40px rgba(212, 175, 55, 0.4);
+}
+
+/* FOOTER */
+footer {
+    background: linear-gradient(180deg, transparent, rgba(26, 26, 26, 0.8));
+    border-top: 1px solid rgba(212, 175, 55, 0.2);
+    padding: 60px 60px 40px;
+    text-align: center;
+}
+
+.footer-content {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 15px;
+}
+
+.footer-text {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: rgba(212, 175, 55, 0.4);
+    letter-spacing: 2px;
+    margin-top: 20px;
+}
+
+.footer-divider {
+    width: 60px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 30px auto;
+}
+
+/* CURSOR EFFECT */
+.cursor-glow {
+    position: fixed;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.3s;
+    z-index: 9999;
+    mix-blend-mode: screen;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    header {
+        padding: 20px 30px;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .logo {
+        font-size: 24px;
+    }
+    
+    .companies-grid {
+        padding: 0 30px 80px;
+        gap: 30px;
+        grid-template-columns: 1fr;
+    }
+    
+    .company-card {
+        padding: 30px;
+    }
+    
+    footer {
+        padding: 40px 30px 30px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- Background Layers -->
+<div class="background-layer"></div>
+<div class="grid-overlay"></div>
+
+<!-- Particles -->
+<div class="particle"></div>
+<div class="particle"></div>
+<div class="particle"></div>
+<div class="particle"></div>
+<div class="particle"></div>
+<div class="particle"></div>
+<div class="particle"></div>
+<div class="particle"></div>
+<div class="particle"></div>
+<div class="particle"></div>
+
+<!-- Cursor Glow -->
+<div class="cursor-glow"></div>
+
+<div class="content">
+
+<!-- Header -->
+<header>
+    <a href="index.html" class="logo">EXITUS</a>
+    <div class="tagline">Where Empires Fall</div>
+</header>
+
+<!-- Section Header -->
+<div class="section-header">
+    <div class="section-subtitle">Choose Your Battlefield</div>
+    <h2 class="section-title">Lead These Fallen Giants</h2>
+    <p style="font-size: 18px; color: rgba(212, 175, 55, 0.8); max-width: 800px; margin: 20px auto 0; line-height: 1.6;">Each scenario places you at the center of a corporate collapse. Every decision you make will either save the empire — or accelerate its fall.</p>
+</div>
+
+<!-- Companies Grid -->
+<div class="companies-grid">
+
+    <div class="company-card">
+        <div class="company-icon">📱</div>
+        <h3 class="company-name">NOKIA</h3>
+        <p class="company-tagline">Innovation Lost in Transition</p>
+        <div class="company-stats">
+            <div class="stat-item">
+                <span class="stat-icon">📉</span>
+                <span>Market Share: 40% → 3%</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-icon">⚠️</span>
+                <span>Missed Smartphone Revolution</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-icon">💰</span>
+                <span>$100B+ Value Destroyed</span>
+            </div>
+        </div>
+        <button class="start-button" onclick="startSimulation('nokia')">
+            <span>Take the CEO Chair →</span>
+        </button>
+    </div>
+
+    <div class="company-card">
+        <div class="company-icon">🌐</div>
+        <h3 class="company-name">YAHOO</h3>
+        <p class="company-tagline">The Internet Giant That Wasn't</p>
+        <div class="company-stats">
+            <div class="stat-item">
+                <span class="stat-icon">💔</span>
+                <span>Rejected Google Acquisition</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-icon">📊</span>
+                <span>Peak Value: $125B → $5B</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-icon">⏱️</span>
+                <span>Strategic Misalignment</span>
+            </div>
+        </div>
+        <button class="start-button" onclick="startSimulation('yahoo')">
+            <span>Take the CEO Chair →</span>
+        </button>
+    </div>
+
+    <div class="company-card">
+        <div class="company-icon">✈️</div>
+        <h3 class="company-name">KINGFISHER</h3>
+        <p class="company-tagline">Luxury Without Liquidity</p>
+        <div class="company-stats">
+            <div class="stat-item">
+                <span class="stat-icon">💳</span>
+                <span>Debt: ₹7,000+ Crore</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-icon">🔥</span>
+                <span>Operational Cost Explosion</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-icon">⚡</span>
+                <span>Premium Airline Collapse</span>
+            </div>
+        </div>
+        <button class="start-button" onclick="startSimulation('kingfisher')">
+            <span>Take the CEO Chair →</span>
+        </button>
+    </div>
+
+    <div class="company-card">
+        <div class="company-icon">📡</div>
+        <h3 class="company-name">VODAFONE</h3>
+        <p class="company-tagline">Debt vs Market Disruption</p>
+        <div class="company-stats">
+            <div class="stat-item">
+                <span class="stat-icon">💸</span>
+                <span>AGR Liability: ₹58,000 Cr</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-icon">📱</span>
+                <span>Jio's Price War Impact</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-icon">⚠️</span>
+                <span>High Spectrum Costs</span>
+            </div>
+        </div>
+        <button class="start-button" onclick="startSimulation('vodafone')">
+            <span>Take the CEO Chair →</span>
+        </button>
+    </div>
+
+</div>
+
+<!-- Footer -->
+<footer>
+    <div class="footer-content">
+        <div class="footer-logo">EXITUS</div>
+        <div class="footer-divider"></div>
+        <p class="footer-text">© 2026 EXITUS | Financial Decision Impact Simulator<br>Learn from failure. Master the future.</p>
+    </div>
+</footer>
+
+</div>
+
+<script>
+// Cursor glow effect
+const cursorGlow = document.querySelector('.cursor-glow');
+let mouseX = 0, mouseY = 0;
+let glowX = 0, glowY = 0;
+
+document.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+});
+
+function animateGlow() {
+    glowX += (mouseX - glowX) * 0.1;
+    glowY += (mouseY - glowY) * 0.1;
+    
+    cursorGlow.style.left = glowX + 'px';
+    cursorGlow.style.top = glowY + 'px';
+    
+    requestAnimationFrame(animateGlow);
+}
+
+animateGlow();
+
+// Simulation start function
+function startSimulation(company) {
+    // Add visual feedback
+    const button = event.target.closest('.start-button');
+    button.style.transform = 'scale(0.95)';
+    setTimeout(() => {
+        button.style.transform = '';
+        // Navigate to the company's specific page
+        window.location.href = `${company}.html`;
+    }, 200);
+}
+</script>
+
+</body>
+</html>

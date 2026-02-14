@@ -1,0 +1,3006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vodafone India: Strategic Crisis Simulator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --crimson: #DC143C;
+            --deep-red: #8B0000;
+            --charcoal: #2C2C2C;
+            --slate: #4A4A4A;
+            --cream: #F5F5DC;
+            --gold: #D4AF37;
+            --light-gray: #E8E8E8;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: var(--cream);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 12px 24px;
+            background: rgba(212, 175, 55, 0.1);
+            border: 2px solid var(--gold);
+            color: var(--gold);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 14px;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .back-button:hover {
+            background: var(--gold);
+            color: var(--charcoal);
+            transform: translateX(-5px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--crimson), var(--gold));
+            animation: expandWidth 1s ease-out;
+        }
+
+        @keyframes expandWidth {
+            from { width: 0; }
+            to { width: 100px; }
+        }
+
+        h1 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, var(--crimson), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--light-gray);
+            font-weight: 300;
+            animation: fadeIn 1.2s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .game-card {
+            background: rgba(42, 42, 42, 0.95);
+            border-radius: 20px;
+            padding: 50px;
+            margin-bottom: 40px;
+            border: 2px solid rgba(220, 20, 60, 0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.6s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--crimson), var(--gold));
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .decision-header {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 2rem;
+            color: var(--gold);
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .company-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .stat-box {
+            background: rgba(220, 20, 60, 0.1);
+            border: 1px solid rgba(220, 20, 60, 0.3);
+            padding: 20px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .stat-box:hover {
+            background: rgba(220, 20, 60, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(220, 20, 60, 0.2);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--light-gray);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--gold);
+        }
+
+
+        .progress-bar-container {
+            width: 100%;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+            position: relative;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 1s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .indicator-green {
+            background: linear-gradient(90deg, #4CAF50, #66BB6A);
+        }
+
+        .indicator-amber {
+            background: linear-gradient(90deg, #FF9800, #FFA726);
+        }
+
+        .indicator-red {
+            background: linear-gradient(90deg, #DC143C, #E91E63);
+        }
+
+        .stat-percentage {
+            font-size: 0.9rem;
+            color: var(--light-gray);
+            margin-top: 5px;
+        }
+
+        .critical-notice {
+            background: linear-gradient(135deg, rgba(220, 20, 60, 0.2), rgba(139, 0, 0, 0.2));
+            border: 2px solid var(--crimson);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--gold);
+            text-align: center;
+            box-shadow: 0 0 30px rgba(220, 20, 60, 0.4);
+            animation: warningFadeIn 0.8s ease-out forwards;
+        }
+
+        @keyframes warningFadeIn {
+            0% { 
+                opacity: 0;
+                transform: translateY(-10px);
+                box-shadow: 0 0 10px rgba(220, 20, 60, 0.2);
+            }
+            100% { 
+                opacity: 1;
+                transform: translateY(0);
+                box-shadow: 0 0 30px rgba(220, 20, 60, 0.4);
+            }
+        }
+
+        .learning-category {
+            display: inline-block;
+            background: rgba(212, 175, 55, 0.2);
+            color: var(--gold);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            border: 1px solid rgba(212, 175, 55, 0.4);
+        }
+
+        .question-section {
+            background: rgba(74, 74, 74, 0.3);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            border-left: 5px solid var(--crimson);
+        }
+
+        .question-text {
+            font-size: 1.4rem;
+            font-weight: 500;
+            color: var(--cream);
+            margin-bottom: 30px;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .option-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(220, 20, 60, 0.4);
+            padding: 25px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(220, 20, 60, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .option-card:hover::before {
+            left: 100%;
+        }
+
+        .option-card:hover {
+            background: rgba(220, 20, 60, 0.15);
+            border-color: var(--gold);
+            transform: translateX(10px);
+            box-shadow: 0 10px 40px rgba(220, 20, 60, 0.3);
+        }
+
+        .option-letter {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: var(--crimson);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 40px;
+            font-weight: 700;
+            margin-right: 15px;
+            font-size: 1.2rem;
+        }
+
+        .option-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 15px;
+        }
+
+        .option-description {
+            color: var(--light-gray);
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .impact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .impact-item {
+            font-size: 0.9rem;
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+        }
+
+        .impact-label {
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        .analysis-section {
+            background: rgba(42, 42, 42, 0.8);
+            border: 2px solid var(--gold);
+            padding: 40px;
+            border-radius: 20px;
+            margin: 40px 0;
+            display: none;
+        }
+
+        .analysis-section.show {
+            display: block;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .analysis-title {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 2rem;
+            color: var(--gold);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .data-point {
+            background: rgba(220, 20, 60, 0.1);
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid var(--crimson);
+            border-radius: 8px;
+        }
+
+        .data-point h4 {
+            color: var(--gold);
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .data-point p {
+            color: var(--light-gray);
+            line-height: 1.8;
+        }
+
+        .key-learnings {
+            background: rgba(212, 175, 55, 0.1);
+            border: 2px solid var(--gold);
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 30px;
+        }
+
+        .key-learnings h3 {
+            color: var(--gold);
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            font-family: 'Libre Baskerville', serif;
+        }
+
+        .key-learnings ul {
+            list-style: none;
+        }
+
+        .key-learnings li {
+            padding: 12px 0 12px 30px;
+            position: relative;
+            color: var(--cream);
+            line-height: 1.6;
+        }
+
+        .key-learnings li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--crimson);
+            font-size: 1.5rem;
+        }
+
+        .next-button {
+            background: linear-gradient(135deg, var(--crimson), var(--deep-red));
+            color: white;
+            border: none;
+            padding: 18px 50px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 30px auto;
+            display: block;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 10px 30px rgba(220, 20, 60, 0.4);
+        }
+
+        .next-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(220, 20, 60, 0.6);
+            background: linear-gradient(135deg, #ff1744, var(--crimson));
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Live Balance Sheet Snapshot Styles */
+        .balance-sheet-snapshot {
+            background: linear-gradient(135deg, rgba(220, 20, 60, 0.15), rgba(212, 175, 55, 0.15));
+            border: 2px solid var(--gold);
+            border-radius: 15px;
+            padding: 35px;
+            margin: 40px 0;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        .balance-sheet-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(212, 175, 55, 0.4);
+        }
+
+        .balance-sheet-title {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.6rem;
+            color: var(--gold);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(76, 175, 80, 0.2);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #4CAF50;
+            border: 1px solid #4CAF50;
+        }
+
+        .live-pulse {
+            width: 8px;
+            height: 8px;
+            background: #4CAF50;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+
+        .financial-metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .metric-card {
+            background: rgba(42, 42, 42, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--crimson), var(--gold));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.6s ease;
+        }
+
+        .metric-card.updated::before {
+            transform: scaleX(1);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--gold);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+        }
+
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .metric-label-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .metric-label {
+            font-size: 0.85rem;
+            color: var(--light-gray);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+
+        .metric-description {
+            font-size: 0.7rem;
+            color: rgba(245, 245, 220, 0.5);
+            text-transform: none;
+            letter-spacing: 0;
+            font-weight: 400;
+            margin-top: 3px;
+            font-style: italic;
+        }
+
+        .metric-change {
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .metric-change.positive {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+        }
+
+        .metric-change.negative {
+            background: rgba(220, 20, 60, 0.2);
+            color: #DC143C;
+        }
+
+        .metric-change.neutral {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--light-gray);
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 8px;
+            font-family: 'DM Sans', monospace;
+        }
+
+        .metric-subtext {
+            font-size: 0.8rem;
+            color: rgba(245, 245, 220, 0.6);
+            font-style: italic;
+        }
+
+        .credit-rating-display {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .rating-badge {
+            font-size: 2.5rem;
+            font-weight: 700;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-family: 'Libre Baskerville', serif;
+            min-width: 100px;
+            text-align: center;
+            transition: all 0.5s ease;
+        }
+
+        .rating-AAA, .rating-AA { 
+            background: linear-gradient(135deg, #4CAF50, #66BB6A);
+            color: white;
+            box-shadow: 0 5px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .rating-A, .rating-BBB { 
+            background: linear-gradient(135deg, #2196F3, #42A5F5);
+            color: white;
+            box-shadow: 0 5px 20px rgba(33, 150, 243, 0.4);
+        }
+
+        .rating-BB, .rating-B { 
+            background: linear-gradient(135deg, #FF9800, #FFA726);
+            color: white;
+            box-shadow: 0 5px 20px rgba(255, 152, 0, 0.4);
+        }
+
+        .rating-CCC, .rating-CC, .rating-C { 
+            background: linear-gradient(135deg, #DC143C, #E91E63);
+            color: white;
+            box-shadow: 0 5px 20px rgba(220, 20, 60, 0.4);
+        }
+
+        .rating-D { 
+            background: linear-gradient(135deg, #8B0000, #4A0000);
+            color: white;
+            box-shadow: 0 5px 20px rgba(139, 0, 0, 0.5);
+        }
+
+        .rating-info {
+            flex: 1;
+        }
+
+        .rating-title {
+            font-size: 0.9rem;
+            color: var(--light-gray);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .rating-description {
+            font-size: 0.95rem;
+            color: var(--cream);
+            line-height: 1.5;
+        }
+
+        .impact-alert {
+            background: rgba(220, 20, 60, 0.15);
+            border-left: 4px solid var(--crimson);
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: var(--cream);
+            line-height: 1.6;
+        }
+
+        .impact-alert strong {
+            color: var(--gold);
+        }
+
+        .performance-graph-container {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 40px;
+            border-radius: 15px;
+            margin: 40px 0;
+            border: 2px solid var(--gold);
+        }
+
+        .graph-title {
+            font-family: 'Libre Baskerville', serif;
+            color: var(--gold);
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        #performanceChart1, #performanceChart2, #performanceChart3, #performanceChart4, #performanceChart5 {
+            width: 100% !important;
+            height: auto !important;
+            max-height: 400px;
+        }
+
+        .graph-legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--cream);
+            font-size: 0.95rem;
+        }
+
+        .legend-color {
+            width: 30px;
+            height: 4px;
+            border-radius: 2px;
+        }
+
+        .page-transition {
+            animation: pageSlideIn 0.6s ease-out;
+        }
+
+        @keyframes pageSlideIn {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .chart-container {
+            margin: 30px 0;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+
+        .bar-chart {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .bar-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .bar-label {
+            min-width: 150px;
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        .bar-track {
+            flex: 1;
+            height: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--crimson), var(--gold));
+            border-radius: 15px;
+            transition: width 1.5s ease-out;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            color: white;
+            font-weight: 700;
+        }
+
+        .outcome-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 700;
+            margin: 10px 5px;
+            font-size: 0.9rem;
+        }
+
+        .outcome-positive {
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid #4CAF50;
+            color: #4CAF50;
+        }
+
+        .outcome-negative {
+            background: rgba(244, 67, 54, 0.2);
+            border: 1px solid #F44336;
+            color: #F44336;
+        }
+
+        .outcome-neutral {
+            background: rgba(255, 193, 7, 0.2);
+            border: 1px solid #FFC107;
+            color: #FFC107;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .game-card {
+                padding: 30px 20px;
+            }
+            
+            .decision-header {
+                font-size: 1.5rem;
+            }
+        }
+
+        .analysis-reveal-btn {
+            display: block;
+            margin: 35px auto 10px;
+            background: transparent;
+            color: var(--gold);
+            border: 2px solid var(--gold);
+            padding: 16px 60px;
+            font-size: 1.15rem;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.2);
+        }
+
+        .analysis-reveal-btn:hover {
+            background: var(--gold);
+            color: #1a1a1a;
+            box-shadow: 0 8px 35px rgba(212, 175, 55, 0.55);
+            transform: translateY(-2px);
+        }
+
+        .analysis-graph-page {
+            /* full visible graph page */
+        }
+
+        .analysis-detail-page {
+            animation: fadeInUp 0.7s ease-out;
+        }
+    
+        /* ===== COMPLETION SCREEN STYLES ===== */
+        .completion-trophy {
+            font-size: 5rem;
+            margin-bottom: 15px;
+            display: block;
+            animation: trophyBounce 1s ease-out;
+        }
+        @keyframes trophyBounce {
+            0% { transform: scale(0) rotate(-15deg); opacity: 0; }
+            60% { transform: scale(1.2) rotate(5deg); opacity: 1; }
+            80% { transform: scale(0.95) rotate(-2deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+        .completion-title {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 2.6rem;
+            background: linear-gradient(135deg, var(--gold), #fff8dc, var(--crimson));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+        .completion-subtitle {
+            color: var(--light-gray);
+            font-size: 1.1rem;
+            line-height: 1.8;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .completion-decisions-bar {
+            margin: 30px 0;
+        }
+        /* Grid: 3 chips on row 1, 2 chips centered on row 2 */
+        #decisionSummary {
+            display: grid;
+            grid-template-columns: repeat(3, auto);
+            gap: 12px;
+            justify-content: center;
+            justify-items: center;
+        }
+        /* 4th and 5th chips sit in a new row, centered as a group */
+        #decisionSummary .decision-chip:nth-child(4),
+        #decisionSummary .decision-chip:nth-child(5) {
+            grid-row: 2;
+        }
+        #decisionSummary .decision-chip:nth-child(4) {
+            grid-column: 1 / span 1;
+            justify-self: end;
+        }
+        #decisionSummary .decision-chip:nth-child(5) {
+            grid-column: 2 / span 1;
+            justify-self: start;
+        }
+        .completion-decisions-bar .decision-chip {
+            background: rgba(212,175,55,0.12);
+            border: 1px solid rgba(212,175,55,0.4);
+            border-radius: 30px;
+            padding: 8px 18px;
+            font-size: 0.9rem;
+            color: var(--cream);
+            white-space: nowrap;
+        }
+        .completion-decisions-bar .decision-chip span {
+            color: var(--gold);
+            font-weight: 700;
+            margin-left: 6px;
+        }
+        @media (max-width: 640px) {
+            #decisionSummary {
+                grid-template-columns: repeat(2, auto);
+            }
+            #decisionSummary .decision-chip:nth-child(4),
+            #decisionSummary .decision-chip:nth-child(5) {
+                grid-row: unset;
+                grid-column: unset;
+                justify-self: center;
+            }
+        }
+        .completion-graph-card {
+            background: rgba(30,30,30,0.8);
+            border: 2px solid rgba(212,175,55,0.4);
+            border-radius: 18px;
+            padding: 35px;
+            margin: 30px 0;
+        }
+        .completion-graph-header {
+            margin-bottom: 10px;
+        }
+        .completion-graph-title {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.5rem;
+            color: var(--gold);
+            margin-bottom: 6px;
+        }
+        .completion-graph-sub {
+            font-size: 0.9rem;
+            color: rgba(245,245,220,0.6);
+        }
+        .completion-legend {
+            display: flex;
+            gap: 25px;
+            margin: 15px 0 5px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+            color: var(--light-gray);
+        }
+        .legend-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .score-card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+        .score-card {
+            background: rgba(42,42,42,0.9);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        .score-card:hover { transform: translateY(-4px); }
+        .score-card-icon { font-size: 2rem; margin-bottom: 10px; }
+        .score-card-label {
+            font-size: 0.85rem;
+            color: var(--light-gray);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        .score-card-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gold);
+        }
+        /* Key Learnings Final */
+        .key-learnings-final {
+            background: rgba(20,20,20,0.6);
+            border: 2px solid rgba(212,175,55,0.3);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 30px 0;
+        }
+        .kl-title {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.8rem;
+            color: var(--gold);
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .kl-intro {
+            color: var(--light-gray);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+        .kl-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 35px;
+        }
+        .kl-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 18px;
+            background: linear-gradient(135deg, rgba(220,20,60,0.12), rgba(212,175,55,0.08));
+            border: 1px solid rgba(220,20,60,0.35);
+            border-radius: 14px;
+            padding: 22px 25px;
+            animation: fadeInUp 0.6s ease-out both;
+        }
+        .kl-card-badge {
+            flex-shrink: 0;
+            width: 46px;
+            height: 46px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            background: rgba(220,20,60,0.2);
+            border: 1px solid rgba(220,20,60,0.4);
+        }
+        .kl-card-body {}
+        .kl-card-label {
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--crimson);
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        .kl-card-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 6px;
+        }
+        .kl-card-text {
+            color: var(--light-gray);
+            font-size: 0.95rem;
+            line-height: 1.65;
+        }
+        .kl-card-positive { border-color: rgba(76,175,80,0.4); background: linear-gradient(135deg, rgba(76,175,80,0.1), rgba(212,175,55,0.06)); }
+        .kl-card-positive .kl-card-badge { background: rgba(76,175,80,0.2); border-color: rgba(76,175,80,0.4); }
+        .kl-card-positive .kl-card-label { color: #4CAF50; }
+        /* ===== UNIVERSAL PRINCIPLES — REDESIGNED ===== */
+        .kl-universal {
+            border-top: 2px solid rgba(212,175,55,0.3);
+            padding-top: 40px;
+            margin-top: 20px;
+        }
+        .kl-universal-title {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: var(--gold);
+            text-align: center;
+            margin-bottom: 35px;
+            letter-spacing: 0.5px;
+        }
+        .kl-universal-title .title-bolt { color: var(--crimson); margin-right: 10px; }
+        .kl-universal-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        @media (max-width: 900px) { .kl-universal-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 580px) { .kl-universal-grid { grid-template-columns: 1fr; } }
+        .kl-universal-card {
+            background: linear-gradient(145deg, rgba(30,28,35,0.95), rgba(22,20,28,0.98));
+            border: 1px solid rgba(255,255,255,0.09);
+            border-radius: 18px;
+            padding: 28px 24px 24px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+        }
+        .kl-universal-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 18px;
+            background: radial-gradient(ellipse at top left, rgba(212,175,55,0.04) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .kl-universal-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(212,175,55,0.35);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(212,175,55,0.15);
+        }
+        .kl-u-card-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+        .kl-u-num {
+            font-size: 2.6rem;
+            font-weight: 900;
+            font-family: 'Libre Baskerville', serif;
+            color: rgba(180,140,60,0.45);
+            line-height: 1;
+            letter-spacing: -1px;
+        }
+        .kl-u-icon { font-size: 1.6rem; line-height: 1; opacity: 0.85; }
+        .kl-u-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--cream);
+            margin-bottom: 10px;
+            line-height: 1.35;
+        }
+        .kl-u-text {
+            color: rgba(220,215,200,0.75);
+            font-size: 0.88rem;
+            line-height: 1.7;
+        }
+        .kl-u-text strong { color: var(--cream); font-weight: 700; }
+
+    </style>
+</head>
+<body>
+    <a href="companies.html" class="back-button">← Back to Companies</a>
+    <div class="container">
+        <div class="header">
+            <h1>VODAFONE INDIA</h1>
+            <p class="subtitle">Strategic Crisis Simulator: Navigate 5 Critical Decisions (2015-2022)</p>
+        </div>
+
+        <!-- Decision 1 (NEW) -->
+        <div class="game-card" id="decision1">
+            <div class="decision-header">Decision 1: Preparing for Market Disruption (2015)</div>
+
+            <div class="critical-notice">&#9888;&#65039; This decision will shape the next 5&#8211;10 years of the company. &#9888;&#65039;</div>
+
+            <div class="question-section">
+                <div class="question-text">How should Vodafone prepare for upcoming competition and disruption in the Indian telecom market?</div>
+            </div>
+
+            <div class="company-stats">
+                <div class="stat-box">
+                    <div class="stat-label">Cash Reserves</div>
+                    <div class="stat-value">&#8377;18,000 Cr</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill indicator-green" style="width: 75%"></div>
+                    </div>
+                    <div class="stat-percentage">Healthy level</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Total Debt</div>
+                    <div class="stat-value">&#8377;35,000 Cr</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill indicator-amber" style="width: 58%"></div>
+                    </div>
+                    <div class="stat-percentage">Manageable but significant</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Market Share</div>
+                    <div class="stat-value">23%</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill indicator-green" style="width: 76.7%"></div>
+                    </div>
+                    <div class="stat-percentage">2nd largest operator</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Stability</div>
+                    <div class="stat-value">High</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill indicator-green" style="width: 85%"></div>
+                    </div>
+                    <div class="stat-percentage">Pre-disruption comfort zone</div>
+                </div>
+            </div>
+
+            <div class="options-container">
+                <div class="option-card" onclick="selectOption(1, 'A')">
+                    <div class="option-title">
+                        <span class="option-letter">A</span>
+                        Continue current strategy without major changes
+                    </div>
+                    <div class="option-description">
+                        Rely on strong brand and stable revenues, assuming competition will remain rational and manageable, while avoiding heavy investments or organizational changes.
+                    </div>
+                    <div class="impact-grid">
+                        <div class="impact-item">
+                            <span class="impact-label">Cash Outflow:</span> &#8377;2,000 Cr
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Short-term:</span> Profits stable
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Long-term:</span> Unprepared for shock
+                        </div>
+                    </div>
+                </div>
+
+                <div class="option-card" onclick="selectOption(1, 'B')">
+                    <div class="option-title">
+                        <span class="option-letter">B</span>
+                        Invest heavily in network and cost efficiency
+                    </div>
+                    <div class="option-description">
+                        Upgrade infrastructure and optimize operations early to withstand future pricing pressure, even though it requires large upfront spending from reserves.
+                    </div>
+                    <div class="impact-grid">
+                        <div class="impact-item">
+                            <span class="impact-label">Cash Outflow:</span> &#8377;8,000 Cr
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Short-term:</span> Lower profits
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Long-term:</span> Stronger resilience
+                        </div>
+                    </div>
+                </div>
+
+                <div class="option-card" onclick="selectOption(1, 'C')">
+                    <div class="option-title">
+                        <span class="option-letter">C</span>
+                        Take loans to expand aggressively
+                    </div>
+                    <div class="option-description">
+                        Borrow funds to expand footprint rapidly, aiming for market dominance before new entrants disrupt pricing structures.
+                    </div>
+                    <div class="impact-grid">
+                        <div class="impact-item">
+                            <span class="impact-label">Cash Outflow:</span> &#8377;4,000 Cr
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Loan:</span> &#8377;6,000 Cr
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Short-term:</span> Market share rises
+                        </div>
+                        <div class="impact-item">
+                            <span class="impact-label">Long-term:</span> High debt exposure
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analysis 1 (NEW) -->
+        <div class="analysis-section" id="analysis1">
+        <div class="analysis-graph-page" id="graphPage1">
+            <div class="analysis-title">Decision Analysis &amp; Market Intelligence</div>
+            <div class="performance-graph-container">
+                <h3 class="graph-title">Your Decision Impact: Company Performance Timeline</h3>
+                <div class="chart-container">
+                    <canvas id="performanceChart1"></canvas>
+                </div>
+            </div>
+
+            <!-- Live Balance Sheet Snapshot -->
+            <div class="balance-sheet-snapshot" id="balanceSheet1">
+                <div class="balance-sheet-header">
+                    <h3 class="balance-sheet-title">
+                        📊 Live Balance Sheet Snapshot
+                    </h3>
+                    <div class="live-indicator">
+                        <div class="live-pulse"></div>
+                        UPDATED
+                    </div>
+                </div>
+
+                <div class="financial-metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-label">💰 Cash Reserves</span>
+                            <span class="metric-change" id="cashChange1">--</span>
+                        </div>
+                        <div class="metric-value" id="cashValue1">₹--</div>
+                        <div class="metric-subtext" id="cashSubtext1">Available liquidity</div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-label">📉 Total Debt</span>
+                            <span class="metric-change" id="debtChange1">--</span>
+                        </div>
+                        <div class="metric-value" id="debtValue1">₹--</div>
+                        <div class="metric-subtext" id="debtSubtext1">Debt-to-equity ratio</div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-label">👥 Subscribers</span>
+                            <span class="metric-change" id="subsChange1">--</span>
+                        </div>
+                        <div class="metric-value" id="subsValue1">--M</div>
+                        <div class="metric-subtext" id="subsSubtext1">Active user base</div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <div class="metric-label-wrapper">
+                                <span class="metric-label">📱 ARPU</span>
+                                <span class="metric-description">Average Revenue Per User</span>
+                            </div>
+                            <span class="metric-change" id="arpuChange1">--</span>
+                        </div>
+                        <div class="metric-value" id="arpuValue1">₹--</div>
+                        <div class="metric-subtext" id="arpuSubtext1">Avg revenue per user/month</div>
+                    </div>
+                </div>
+
+                <div class="credit-rating-display">
+                    <div class="rating-badge" id="ratingBadge1">--</div>
+                    <div class="rating-info">
+                        <div class="rating-title">Credit Rating</div>
+                        <div class="rating-description" id="ratingDescription1">Calculating financial health...</div>
+                    </div>
+                </div>
+
+                <div class="impact-alert" id="impactAlert1" style="display:none;">
+                    <strong>⚠️ Financial Impact:</strong> <span id="impactText1"></span>
+                </div>
+            </div>
+
+            <button class="analysis-reveal-btn" onclick="showAnalysisPage(1)">NEXT SCENARIO</button>
+        </div>
+
+        </div>
+
+        <!-- Decision 2 (formerly labelled Decision 1 in original) -->
+        <div class="game-card hidden" id="decision2">
+            <div class="decision-header">Decision 2: Responding to Jio's Price War (2016)</div>
+            
+            <div class="critical-notice">⚠️ This decision will decide the next 5-10 years of the company. ⚠️</div>
+            <div class="question-section">
+                <div class="question-text">How should Vodafone prepare for upcoming competition and disruption in the Indian telecom market?</div>
+            </div>
+
+                                    <div class="company-stats">
+                <div class="stat-box">
+                    <div class="stat-label">Cash Reserves</div>
+                    <div class="stat-value">₹8,500 crore</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill indicator-amber" style="width: 56.7%"></div>
+                    </div>
+                    <div class="stat-percentage">56.7% of optimal level</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Total Debt</div>
+                    <div class="stat-value">₹12,000 crore</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill indicator-amber" style="width: 40%"></div>
+                    </div>
+                    <div class="stat-percentage">Moderate risk level</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Market Share</div>
+                    <div class="stat-value">23.2%</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill indicator-green" style="width: 77.3%"></div>
+                    </div>
+                    <div class="stat-percentage">2nd largest operator</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Quarterly Revenue</div>
+                    <div class="stat-value">₹11,500 crore</div>
+                </div>
+            </div>
+
+                        
+                
+                <div class="options-container">
+                    <div class="option-card" onclick="selectOption(2, 'A')">
+                        <div class="option-title">
+                            <span class="option-letter">A</span>
+                            Match Jio's pricing
+                        </div>
+                        <div class="option-description">
+                            Slash tariffs aggressively to retain customers, accepting heavy losses while hoping the price war will end quickly.
+                        </div>
+                        <div class="impact-grid">
+                            <div class="impact-item">
+                                <span class="impact-label">Cash Loss:</span> ₹6,000 Cr
+                            </div>
+                            <div class="impact-item">
+                                <span class="impact-label">Short-term:</span> Churn slows
+                            </div>
+                            <div class="impact-item">
+                                <span class="impact-label">Long-term:</span> Severe financial stress
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="option-card" onclick="selectOption(2, 'B')">
+                        <div class="option-title">
+                            <span class="option-letter">B</span>
+                            Focus on service quality and premium users
+                        </div>
+                        <div class="option-description">
+                            Maintain pricing discipline and invest in network quality, targeting high-value customers while allowing low-margin users to leave.
+                        </div>
+                        <div class="impact-grid">
+                            <div class="impact-item">
+                                <span class="impact-label">Cash Outflow:</span> ₹3,500 Cr
+                            </div>
+                            <div class="impact-item">
+                                <span class="impact-label">Short-term:</span> Market share declines
+                            </div>
+                            <div class="impact-item">
+                                <span class="impact-label">Long-term:</span> Better margins
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="option-card" onclick="selectOption(2, 'C')">
+                        <div class="option-title">
+                            <span class="option-letter">C</span>
+                            Exit loss-making circles
+                        </div>
+                        <div class="option-description">
+                            Close unprofitable regions to stop cash bleed, even if it reduces nationwide presence and customer base.
+                        </div>
+                        <div class="impact-grid">
+                            <div class="impact-item">
+                                <span class="impact-label">Cash Loss:</span> ₹2,000 Cr
+                            </div>
+                            <div class="impact-item">
+                                <span class="impact-label">Short-term:</span> Negative perception
+                            </div>
+                            <div class="impact-item">
+                                <span class="impact-label">Long-term:</span> Improved survival
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analysis 2 -->
+        <div class="analysis-section" id="analysis2">
+        <div class="analysis-graph-page" id="graphPage2">
+            <div class="analysis-title">Decision Analysis & Market Intelligence</div>
+            <div class="performance-graph-container">
+                <h3 class="graph-title">Your Decision Impact: Company Performance Timeline</h3>
+                <div class="chart-container">
+                    <canvas id="performanceChart2"></canvas>
+                </div>
+            </div>
+
+            <!-- Live Balance Sheet Snapshot -->
+            <div class="balance-sheet-snapshot" id="balanceSheet2">
+                <div class="balance-sheet-header">
+                    <h3 class="balance-sheet-title">
+                        📊 Live Balance Sheet Snapshot
+                    </h3>
+                    <div class="live-indicator">
+                        <div class="live-pulse"></div>
+                        UPDATED
+                    </div>
+                </div>
+
+                <div class="financial-metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-label">💰 Cash Reserves</span>
+                            <span class="metric-change" id="cashChange2">--</span>
+                        </div>
+                        <div class="metric-value" id="cashValue2">₹--</div>
+                        <div class="metric-subtext" id="cashSubtext2">Available liquidity</div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-label">📉 Total Debt</span>
+                            <span class="metric-change" id="debtChange2">--</span>
+                        </div>
+                        <div class="metric-value" id="debtValue2">₹--</div>
+                        <div class="metric-subtext" id="debtSubtext2">Debt-to-equity ratio</div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-label">👥 Subscribers</span>
+                            <span class="metric-change" id="subsChange2">--</span>
+                        </div>
+                        <div class="metric-value" id="subsValue2">--M</div>
+                        <div class="metric-subtext" id="subsSubtext2">Active user base</div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <div class="metric-label-wrapper">
+                                <span class="metric-label">📱 ARPU</span>
+                                <span class="metric-description">Average Revenue Per User</span>
+                            </div>
+                            <span class="metric-change" id="arpuChange2">--</span>
+                        </div>
+                        <div class="metric-value" id="arpuValue2">₹--</div>
+                        <div class="metric-subtext" id="arpuSubtext2">Avg revenue per user/month</div>
+                    </div>
+                </div>
+
+                <div class="credit-rating-display">
+                    <div class="rating-badge" id="ratingBadge2">--</div>
+                    <div class="rating-info">
+                        <div class="rating-title">Credit Rating</div>
+                        <div class="rating-description" id="ratingDescription2">Calculating financial health...</div>
+                    </div>
+                </div>
+
+                <div class="impact-alert" id="impactAlert2" style="display:none;">
+                    <strong>⚠️ Financial Impact:</strong> <span id="impactText2"></span>
+                </div>
+            </div>
+
+            <button class="analysis-reveal-btn" onclick="showAnalysisPage(2)">NEXT SCENARIO</button>
+        </div>
+
+        </div>
+
+        <!-- Decision 3 -->
+        <div class="game-card hidden" id="decision3">
+            <div class="decision-header">Decision 3: Vodafone-Idea Merger (2017)</div>
+            
+            <div class="critical-notice">⚠️ This decision will decide the next 5-10 years of the company. ⚠️</div>
+
+            <div class="question-section">
+                <div class="question-text">Should Vodafone merge with Idea to gain scale despite heavy debt?</div>
+            </div>
+
+                        <div class="company-stats">
+                <div class="stat-box">
+                    <div class="stat-label">Cash Reserves</div>
+                    <div class="stat-value">₹2,800 crore</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill indicator-red" style="width: 18.7%"></div>
+                    </div>
+                    <div class="stat-percentage">CRITICAL: Emergency levels</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Total Debt</div>
+                    <div class="stat-value">₹45,000 crore</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill indicator-red" style="width: 100%"></div>
+                    </div>
+                    <div class="stat-percentage">SEVERE: Post-merger combined</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Market Share</div>
+                    <div class="stat-value">32% (combined)</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill indicator-green" style="width: 100%"></div>
+                    </div>
+                    <div class="stat-percentage">Largest operator on paper</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Quarterly Revenue</div>
+                    <div class="stat-value">₹15,600 crore</div>
+                </div>
+            </div>
+
+            <div class="question-section">
+                <div class="question-text">Should Vodafone merge with Idea to gain scale despite heavy debt?</div>
+                
+                <div class="options-container">
+                    <div class="option-card" onclick="selectOption(3, 'A')">
+                        <div class="option-title">
+                            <span class="option-letter">A</span>
+                            Merge to become market leader
+                        </div>
+                        <div class="option-description">
+                            Combine operations to dominate market share, assuming economies of scale will reduce costs and improve competitiveness.
+                        </div>
+                        <div class="impact-grid">
+                            <div class="impact-item">
+                                <span class="impact-label">Cash Outflow:</span> ₹5,000 Cr
+                            </div>
+                            <div class="impact-item">
+                                <span class="impact-label">Short-term:</span> Largest operator
+                            </div>
+                            <div class="impact-item">
+                                <span class="impact-label">Long-term:</span> High debt + integration complexity
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="option-card" onclick="selectOption(3, 'B')">
+                        <div class="option-title">
+                            <span class="option-letter">B</span>
+                            Stay independent and cut costs
+                        </div>
+                        <div class="option-description">
+                            Avoid merger risks and focus on internal restructuring, layoffs, and efficiency improvements to stabilize finances.
+                        </div>
+                        <div class="impact-grid">
+                            <div class="impact-item">
+                                <span class="impact-label">Cash Loss:</span> ₹3,000 Cr
+                            </div>
+                            <div class="impact-item">
+                                <span class="impact-label">Short-term:</span> Employee unrest
+                            </div>
+                            <div class="impact-item">
+                                <span class="impact-label">Long-term:</span> Lower debt, better control
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="option-card" onclick="selectOption(3, 'C')">
+                        <div class="option-title">
+                            <span class="option-letter">C</span>
+                            Bring in foreign strategic investor
+                        </div>
+                        <div class="option-description">
+                            Raise capital by diluting ownership, gaining financial stability and expertise instead of increasing debt burden.
+                        </div>
+                        <div class="impact-grid">
+                            <div class="impact-item">
+                                <span class="impact-label">Cash Inflow:</span> ₹6,000 Cr
+                            </div>
+                            <div class="impact-item">
+                                <span class="impact-label">Short-term:</span> Ownership dilution
+                            </div>
+                            <div class="impact-item">
+                                <span class="impact-label">Long-term:</span> Stronger balance sheet
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analysis 3 -->
+        <div class="analysis-section" id="analysis3">
+        <div class="analysis-graph-page" id="graphPage3">
+            <div class="analysis-title">Decision Analysis & Market Intelligence</div>
+            <div class="performance-graph-container">
+                <h3 class="graph-title">Your Decision Impact: Company Performance Timeline</h3>
+                <div class="chart-container">
+                    <canvas id="performanceChart3"></canvas>
+                </div>
+            </div>
+
+            <!-- Live Balance Sheet Snapshot -->
+            <div class="balance-sheet-snapshot" id="balanceSheet3">
+                <div class="balance-sheet-header">
+                    <h3 class="balance-sheet-title">
+                        📊 Live Balance Sheet Snapshot
+                    </h3>
+                    <div class="live-indicator">
+                        <div class="live-pulse"></div>
+                        UPDATED
+                    </div>
+                </div>
+
+                <div class="financial-metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-label">💰 Cash Reserves</span>
+                            <span class="metric-change" id="cashChange3">--</span>
+                        </div>
+                        <div class="metric-value" id="cashValue3">₹--</div>
+                        <div class="metric-subtext" id="cashSubtext3">Available liquidity</div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-label">📉 Total Debt</span>
+                            <span class="metric-change" id="debtChange3">--</span>
+                        </div>
+                        <div class="metric-value" id="debtValue3">₹--</div>
+                        <div class="metric-subtext" id="debtSubtext3">Debt-to-equity ratio</div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-label">👥 Subscribers</span>
+                            <span class="metric-change" id="subsChange3">--</span>
+                        </div>
+                        <div class="metric-value" id="subsValue3">--M</div>
+                        <div class="metric-subtext" id="subsSubtext3">Active user base</div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <div class="metric-label-wrapper">
+                                <span class="metric-label">📱 ARPU</span>
+                                <span class="metric-description">Average Revenue Per User</span>
+                            </div>
+                            <span class="metric-change" id="arpuChange3">--</span>
+                        </div>
+                        <div class="metric-value" id="arpuValue3">₹--</div>
+                        <div class="metric-subtext" id="arpuSubtext3">Avg revenue per user/month</div>
+                    </div>
+                </div>
+
+                <div class="credit-rating-display">
+                    <div class="rating-badge" id="ratingBadge3">--</div>
+                    <div class="rating-info">
+                        <div class="rating-title">Credit Rating</div>
+                        <div class="rating-description" id="ratingDescription3">Calculating financial health...</div>
+                    </div>
+                </div>
+
+                <div class="impact-alert" id="impactAlert3" style="display:none;">
+                    <strong>⚠️ Financial Impact:</strong> <span id="impactText3"></span>
+                </div>
+            </div>
+
+            <button class="analysis-reveal-btn" onclick="showAnalysisPage(3)">NEXT SCENARIO</button>
+        </div>
+
+        </div>
+
+        <!-- Decision 4 -->
+        <div class="game-card hidden" id="decision4">
+            <div class="decision-header">Decision 4: AGR Dues Crisis (2019)</div>
+            
+            <div class="critical-notice">⚠️ This decision will decide the next 5-10 years of the company. ⚠️</div>
+
+            <div class="question-section">
+                <div class="question-text">How should Vodafone respond to massive AGR dues imposed by the government?</div>
+            </div>
+
+                        <div class="company-stats">
+                <div class="stat-box">
+                    <div class="stat-label">Cash Reserves</div>
+                    <div class="stat-value">₹1,200 crore</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill indicator-red" style="width: 8%"></div>
+                    </div>
+                    <div class="stat-percentage">TERMINAL: Weeks of runway</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">AGR Liability</div>
+                    <div class="stat-value">₹58,000 crore</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill indicator-red" style="width: 100%"></div>
+                    </div>
+                    <div class="stat-percentage">CATASTROPHIC: Unpayable</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Market Share</div>
+                    <div class="stat-value">23.1%</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill indicator-amber" style="width: 77%"></div>
+                    </div>
+                    <div class="stat-percentage">Bleeding subscribers daily</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Quarterly Revenue</div>
+                    <div class="stat-value">₹10,800 crore</div>
+                </div>
+            </div>
+
+            <div class="question-section">
+                <div class="question-text">How should Vodafone respond to massive AGR dues imposed by the government?</div>
+                
+                <div class="options-container">
+                    <div class="option-card" onclick="selectOption(4, 'A')">
+                        <div class="option-title">
+                            <span class="option-letter">A</span>
+                            Raise debt to pay dues
+                        </div>
+                        <div class="option-description">
+                            Borrow heavily to clear dues immediately and avoid legal risk.
+                        </div>
+                        <div class="impact-grid">
+                            <div class="impact-item">
+                                <span class="impact-label">Loan:</span> ₹40,000 Cr
+                            </div>
+                            <div class="impact-item">
+                                <span class="impact-label">Short-term:</span> Legal certainty
+                            </div>
+                            <div class="impact-item">
+                                <span class="impact-label">Long-term:</span> Unsustainable interest burden
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="option-card" onclick="selectOption(4, 'B')">
+                        <div class="option-title">
+                            <span class="option-letter">B</span>
+                            Seek government relief
+                        </div>
+                        <div class="option-description">
+                            Negotiate extended timelines and policy support while continuing limited operations.
+                        </div>
+                        <div class="impact-grid">
+                            <div class="impact-item">
+                                <span class="impact-label">Cash Outflow:</span> ₹1,500 Cr
+                            </div>
+                            <div class="impact-item">
+                                <span class="impact-label">Short-term:</span> Temporary survival
+                            </div>
+                            <div class="impact-item">
+                                <span class="impact-label">Long-term:</span> Continued uncertainty
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="option-card" onclick="selectOption(4, 'C')">
+                        <div class="option-title">
+                            <span class="option-letter">C</span>
+                            Begin controlled exit
+                        </div>
+                        <div class="option-description">
+                            Start exiting Indian market to cap losses and avoid future liabilities.
+                        </div>
+                        <div class="impact-grid">
+                            <div class="impact-item">
+                                <span class="impact-label">Cash Loss:</span> ₹4,000 Cr
+                            </div>
+                            <div class="impact-item">
+                                <span class="impact-label">Short-term:</span> Brand damage
+                            </div>
+                            <div class="impact-item">
+                                <span class="impact-label">Long-term:</span> Capital preservation
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analysis 4 -->
+        <div class="analysis-section" id="analysis4">
+        <div class="analysis-graph-page" id="graphPage4">
+            <div class="analysis-title">Decision Analysis & Market Intelligence</div>
+            <div class="performance-graph-container">
+                <h3 class="graph-title">Your Decision Impact: Company Performance Timeline</h3>
+                <div class="chart-container">
+                    <canvas id="performanceChart4"></canvas>
+                </div>
+            </div>
+
+            <!-- Live Balance Sheet Snapshot -->
+            <div class="balance-sheet-snapshot" id="balanceSheet4">
+                <div class="balance-sheet-header">
+                    <h3 class="balance-sheet-title">
+                        📊 Live Balance Sheet Snapshot
+                    </h3>
+                    <div class="live-indicator">
+                        <div class="live-pulse"></div>
+                        UPDATED
+                    </div>
+                </div>
+
+                <div class="financial-metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-label">💰 Cash Reserves</span>
+                            <span class="metric-change" id="cashChange4">--</span>
+                        </div>
+                        <div class="metric-value" id="cashValue4">₹--</div>
+                        <div class="metric-subtext" id="cashSubtext4">Available liquidity</div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-label">📉 Total Debt</span>
+                            <span class="metric-change" id="debtChange4">--</span>
+                        </div>
+                        <div class="metric-value" id="debtValue4">₹--</div>
+                        <div class="metric-subtext" id="debtSubtext4">Debt-to-equity ratio</div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-label">👥 Subscribers</span>
+                            <span class="metric-change" id="subsChange4">--</span>
+                        </div>
+                        <div class="metric-value" id="subsValue4">--M</div>
+                        <div class="metric-subtext" id="subsSubtext4">Active user base</div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <div class="metric-label-wrapper">
+                                <span class="metric-label">📱 ARPU</span>
+                                <span class="metric-description">Average Revenue Per User</span>
+                            </div>
+                            <span class="metric-change" id="arpuChange4">--</span>
+                        </div>
+                        <div class="metric-value" id="arpuValue4">₹--</div>
+                        <div class="metric-subtext" id="arpuSubtext4">Avg revenue per user/month</div>
+                    </div>
+                </div>
+
+                <div class="credit-rating-display">
+                    <div class="rating-badge" id="ratingBadge4">--</div>
+                    <div class="rating-info">
+                        <div class="rating-title">Credit Rating</div>
+                        <div class="rating-description" id="ratingDescription4">Calculating financial health...</div>
+                    </div>
+                </div>
+
+                <div class="impact-alert" id="impactAlert4" style="display:none;">
+                    <strong>⚠️ Financial Impact:</strong> <span id="impactText4"></span>
+                </div>
+            </div>
+
+            <button class="analysis-reveal-btn" onclick="showAnalysisPage(4)">NEXT SCENARIO</button>
+        </div>
+
+        </div>
+
+        <!-- Decision 5 -->
+        <div class="game-card hidden" id="decision5">
+            <div class="decision-header">Decision 5: Exit vs Survival Bet (2020-2022)</div>
+            
+            <div class="critical-notice">⚠️ This decision will decide the next 5-10 years of the company. ⚠️</div>
+
+            <div class="question-section">
+                <div class="question-text">Should Vodafone continue operating in India or exit?</div>
+            </div>
+
+                        <div class="company-stats">
+                <div class="stat-box">
+                    <div class="stat-label">Cash Reserves</div>
+                    <div class="stat-value">₹300 crore</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill indicator-red" style="width: 2%"></div>
+                    </div>
+                    <div class="stat-percentage">DEATH SPIRAL: Days remaining</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Total Outstanding</div>
+                    <div class="stat-value">₹1,95,000 crore</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill indicator-red" style="width: 100%"></div>
+                    </div>
+                    <div class="stat-percentage">Beyond salvageable</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Market Share</div>
+                    <div class="stat-value">18.2%</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill indicator-red" style="width: 60.7%"></div>
+                    </div>
+                    <div class="stat-percentage">Free-falling, lost 5% in 1 year</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Quarterly Revenue</div>
+                    <div class="stat-value">₹9,200 crore</div>
+                </div>
+            </div>
+
+            <div class="question-section">
+                <div class="question-text">Should Vodafone continue operating in India or exit?</div>
+                
+                <div class="options-container">
+                    <div class="option-card" onclick="selectOption(5, 'A')">
+                        <div class="option-title">
+                            <span class="option-letter">A</span>
+                            Exit market completely
+                        </div>
+                        <div class="option-description">
+                            Shut down operations to stop losses, prioritizing global financial health over local presence.
+                        </div>
+                        <div class="impact-grid">
+                            <div class="impact-item">
+                                <span class="impact-label">Cash Loss:</span> ₹3,000 Cr
+                            </div>
+                            <div class="impact-item">
+                                <span class="impact-label">Short-term:</span> Reputation hit
+                            </div>
+                            <div class="impact-item">
+                                <span class="impact-label">Long-term:</span> Capital protected globally
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="option-card" onclick="selectOption(5, 'B')">
+                        <div class="option-title">
+                            <span class="option-letter">B</span>
+                            Continue with government support
+                        </div>
+                        <div class="option-description">
+                            Accept equity dilution and government involvement, betting on tariff hikes and market recovery.
+                        </div>
+                        <div class="impact-grid">
+                            <div class="impact-item">
+                                <span class="impact-label">Cash Outflow:</span> ₹2,500 Cr
+                            </div>
+                            <div class="impact-item">
+                                <span class="impact-label">Short-term:</span> Survival achieved
+                            </div>
+                            <div class="impact-item">
+                                <span class="impact-label">Long-term:</span> Uncertain revival
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="option-card" onclick="selectOption(5, 'C')">
+                        <div class="option-title">
+                            <span class="option-letter">C</span>
+                            Sell stake to domestic investor
+                        </div>
+                        <div class="option-description">
+                            Transfer partial ownership to reduce debt and bring new leadership.
+                        </div>
+                        <div class="impact-grid">
+                            <div class="impact-item">
+                                <span class="impact-label">Cash Inflow:</span> ₹5,000 Cr
+                            </div>
+                            <div class="impact-item">
+                                <span class="impact-label">Short-term:</span> Control reduced
+                            </div>
+                            <div class="impact-item">
+                                <span class="impact-label">Long-term:</span> Turnaround chance
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analysis 5 -->
+        <div class="analysis-section" id="analysis5">
+        <div class="analysis-graph-page" id="graphPage5">
+            <div class="analysis-title">Decision Analysis & Market Intelligence</div>
+            <div class="performance-graph-container">
+                <h3 class="graph-title">Your Decision Impact: Company Performance Timeline</h3>
+                <div class="chart-container">
+                    <canvas id="performanceChart5"></canvas>
+                </div>
+            </div>
+
+            <!-- Live Balance Sheet Snapshot -->
+            <div class="balance-sheet-snapshot" id="balanceSheet5">
+                <div class="balance-sheet-header">
+                    <h3 class="balance-sheet-title">
+                        📊 Live Balance Sheet Snapshot
+                    </h3>
+                    <div class="live-indicator">
+                        <div class="live-pulse"></div>
+                        UPDATED
+                    </div>
+                </div>
+
+                <div class="financial-metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-label">💰 Cash Reserves</span>
+                            <span class="metric-change" id="cashChange5">--</span>
+                        </div>
+                        <div class="metric-value" id="cashValue5">₹--</div>
+                        <div class="metric-subtext" id="cashSubtext5">Available liquidity</div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-label">📉 Total Debt</span>
+                            <span class="metric-change" id="debtChange5">--</span>
+                        </div>
+                        <div class="metric-value" id="debtValue5">₹--</div>
+                        <div class="metric-subtext" id="debtSubtext5">Debt-to-equity ratio</div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <span class="metric-label">👥 Subscribers</span>
+                            <span class="metric-change" id="subsChange5">--</span>
+                        </div>
+                        <div class="metric-value" id="subsValue5">--M</div>
+                        <div class="metric-subtext" id="subsSubtext5">Active user base</div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <div class="metric-label-wrapper">
+                                <span class="metric-label">📱 ARPU</span>
+                                <span class="metric-description">Average Revenue Per User</span>
+                            </div>
+                            <span class="metric-change" id="arpuChange5">--</span>
+                        </div>
+                        <div class="metric-value" id="arpuValue5">₹--</div>
+                        <div class="metric-subtext" id="arpuSubtext5">Avg revenue per user/month</div>
+                    </div>
+                </div>
+
+                <div class="credit-rating-display">
+                    <div class="rating-badge" id="ratingBadge5">--</div>
+                    <div class="rating-info">
+                        <div class="rating-title">Credit Rating</div>
+                        <div class="rating-description" id="ratingDescription5">Calculating financial health...</div>
+                    </div>
+                </div>
+
+                <div class="impact-alert" id="impactAlert5" style="display:none;">
+                    <strong>⚠️ Financial Impact:</strong> <span id="impactText5"></span>
+                </div>
+            </div>
+
+            <button class="analysis-reveal-btn" onclick="showAnalysisPage(5)">ANALYSIS</button>
+        </div>
+
+        </div>
+
+        <!-- Completion Screen -->
+        <div class="game-card hidden" id="completionScreen">
+
+            <!-- Trophy Header -->
+            <div style="text-align:center; padding: 10px 0 30px;">
+                <div class="completion-trophy">🏆</div>
+                <h2 class="completion-title">CEO Simulation Complete</h2>
+                <p class="completion-subtitle">You have navigated all five critical decisions in Vodafone India's strategic history.<br>See how your choices compare to what actually happened.</p>
+            </div>
+
+            <!-- Your Decisions Summary -->
+            <div class="completion-decisions-bar">
+                <div id="decisionSummary"></div>
+            </div>
+
+            <!-- Comparison Graph -->
+            <div class="completion-graph-card">
+                <div class="completion-graph-header">
+                    <h3 class="completion-graph-title">📈 Your Strategy vs. Actual Vodafone Performance</h3>
+                    <p class="completion-graph-sub">Revenue (₹ Crores) — 2015 to 2022</p>
+                </div>
+                <div class="completion-legend">
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background:#D4AF37;"></div>
+                        <span>Your CEO Path</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background:#DC143C;"></div>
+                        <span>Actual Vodafone History</span>
+                    </div>
+                </div>
+                <div style="position:relative; height: 360px; margin-top: 10px;">
+                    <canvas id="finalComparisonChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Score Card -->
+            <div class="score-card-grid">
+                <div class="score-card" id="scoreCardOutcome">
+                    <div class="score-card-icon">📊</div>
+                    <div class="score-card-label">Your Final Revenue</div>
+                    <div class="score-card-value" id="userFinalRevenue">—</div>
+                </div>
+                <div class="score-card" id="scoreCardActual">
+                    <div class="score-card-icon">📉</div>
+                    <div class="score-card-label">Actual Final Revenue</div>
+                    <div class="score-card-value" style="color:#DC143C;">₹9,600 Cr</div>
+                </div>
+                <div class="score-card" id="scoreCardDelta">
+                    <div class="score-card-icon">⚡</div>
+                    <div class="score-card-label">Your Advantage</div>
+                    <div class="score-card-value" id="userDelta">—</div>
+                </div>
+            </div>
+
+            <!-- Key Learnings -->
+            <div class="key-learnings-final">
+                <h3 class="kl-title">🎓 Key Learnings: What This Simulation Teaches</h3>
+                <p class="kl-intro">These insights are drawn from Vodafone India's real strategic journey — and from the choices you made as CEO.</p>
+
+                <div class="kl-grid" id="keyLearningsGrid">
+                    <!-- Injected dynamically -->
+                </div>
+
+                <!-- Static universal learnings -->
+                <div class="kl-universal">
+                    <h4 class="kl-universal-title"><span class="title-bolt">⚡</span>Universal Principles of Financial Strategy</h4>
+                    <div class="kl-universal-grid">
+                        <div class="kl-universal-card">
+                            <div class="kl-u-card-top"><div class="kl-u-num">01</div><div class="kl-u-icon">🏦</div></div>
+                            <div class="kl-u-title">Debt is a double-edged sword.</div>
+                            <div class="kl-u-text">Loans can fuel growth — but heavy interest payments with low income can become existential. Vodafone's debt rose from ₹35,000 Cr to over ₹1,00,000 Cr, consuming all operational flexibility.</div>
+                        </div>
+                        <div class="kl-universal-card">
+                            <div class="kl-u-card-top"><div class="kl-u-num">02</div><div class="kl-u-icon">💸</div></div>
+                            <div class="kl-u-title">Low price ≠ sustainable business.</div>
+                            <div class="kl-u-text">Competing purely on price destroys margins. Vodafone's ARPU fell from ₹190 to <strong>under ₹100 in 18 months</strong> after matching Jio, with no path back to profitability.</div>
+                        </div>
+                        <div class="kl-universal-card">
+                            <div class="kl-u-card-top"><div class="kl-u-num">03</div><div class="kl-u-icon">🔮</div></div>
+                            <div class="kl-u-title">Plan for disruption before it arrives.</div>
+                            <div class="kl-u-text">Jio's launch was publicly known in advance. Companies that invested in infrastructure before 2016 survived. Those who waited were overwhelmed.</div>
+                        </div>
+                        <div class="kl-universal-card">
+                            <div class="kl-u-card-top"><div class="kl-u-num">04</div><div class="kl-u-icon">👥</div></div>
+                            <div class="kl-u-title">More customers ≠ more success.</div>
+                            <div class="kl-u-text">215 million subscribers paying ₹95 ARPU is worse than 180 million paying ₹150. Revenue quality matters more than volume.</div>
+                        </div>
+                        <div class="kl-universal-card">
+                            <div class="kl-u-card-top"><div class="kl-u-num">05</div><div class="kl-u-icon">⏳</div></div>
+                            <div class="kl-u-title">Small decisions compound into big outcomes.</div>
+                            <div class="kl-u-text">Each of the 5 decisions you made had multiplying effects. A single bold choice early — like investing in infrastructure in 2015 — could have changed every downstream scenario.</div>
+                        </div>
+                        <div class="kl-universal-card">
+                            <div class="kl-u-card-top"><div class="kl-u-num">06</div><div class="kl-u-icon">⚖️</div></div>
+                            <div class="kl-u-title">Balance is the key to long-term survival.</div>
+                            <div class="kl-u-text">Growth, profitability, debt management, and regulatory compliance must all be in balance. Optimising only one — like subscriber growth — while ignoring others leads to collapse.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 20px; margin-top: 40px; justify-content: center; flex-wrap: wrap;">
+                <button class="next-button" onclick="restartSimulation()">&#8635; Restart Simulation</button>
+                <button class="next-button" onclick="window.location.href='companies.html'">🚪 EXIT</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let decisions = {};
+        let performanceCharts = {};
+
+        
+        // ---- ACTUAL VODAFONE HISTORY (Revenue Crores) ----
+        const actualHistory = {
+            labels: ['Q1 2015','Q3 2015','Q1 2016','Q3 2016','Q1 2017','Q3 2017','Q1 2018','Q3 2018','Q1 2019','Q3 2019','Q1 2020','Q3 2020','Q1 2021','Q3 2021','Q1 2022','Q3 2022'],
+            revenue: [11500,11600,11400,10200,9200,7800,8200,8600,10800,9800,9200,8900,8800,9100,9400,9600]
+        };
+
+        const decisionImpact = {
+            1: {
+                A: [11500,11600,11400,10200,8500,7800],
+                B: [11500,11200,11000,10800,11200,11800],
+                C: [11500,12200,12800,11500,9200,8100]
+            },
+            2: {
+                A: [10200,8500,7800,7200,6800],
+                B: [10200,9800,9400,9200,9500],
+                C: [10200,9200,8800,8600,8900]
+            },
+            3: {
+                A: [15600,14200,12800,11500,10800],
+                B: [7800,7400,7200,7400,7800],
+                C: [7800,8600,9200,9800,10200]
+            },
+            4: {
+                A: [10800,9200,7500,6200,5100],
+                B: [10800,10200,9800,9600,10100],
+                C: [10800,9500,8200,6500,4800]
+            },
+            5: {
+                A: [9200,7800,6200,4500,2800,1200],
+                B: [9200,8900,8800,9100,9400,9600],
+                C: [9200,9600,10200,10800,11500,12200]
+            }
+        };
+
+        function buildUserPath(dec) {
+            let path = [11500,11600,11400,10200,9200,7800,8200,8600,10800,9800,9200,8900,8800,9100,9400,9600];
+            const d1=dec[1]||'A', d2=dec[2]||'A', d3=dec[3]||'A', d4=dec[4]||'A', d5=dec[5]||'A';
+
+            // D1: indices 0-5
+            const d1v = decisionImpact[1][d1];
+            for (let i=0;i<6;i++) path[i] = d1v[i];
+
+            // D2: indices 3-7
+            const d2v = decisionImpact[2][d2];
+            const d1end = path[5];
+            for (let i=0;i<5;i++) {
+                const ratio = d1end / 10200;
+                path[3+i] = Math.round(d2v[i] * ratio);
+            }
+
+            // D3: indices 4-8
+            const d3v = decisionImpact[3][d3];
+            const d2end = path[7];
+            for (let i=0;i<5;i++) {
+                const ratio = d2end / 8600;
+                path[4+i] = Math.round(d3v[i] * ratio);
+            }
+
+            // D4: indices 9-13
+            const d4v = decisionImpact[4][d4];
+            const d3end = path[8];
+            for (let i=0;i<5;i++) {
+                const ratio = d3end / 10800;
+                path[9+i] = Math.round(d4v[i] * ratio);
+            }
+
+            // D5: indices 10-15
+            const d5v = decisionImpact[5][d5];
+            const d4end = path[13];
+            for (let i=0;i<6;i++) {
+                const ratio = d4end / 9200;
+                path[10+i] = Math.round(d5v[i] * ratio);
+            }
+            return path;
+        }
+
+        let finalChart = null;
+
+        function injectKeyLearnings(dec) {
+            const learnings = [];
+
+            if (dec[1] === 'A') {
+                learnings.push({pos:false,icon:'⚠️',cat:'Risk Management',title:'Standing still in a changing market is a risk itself',text:'Maintaining the status quo in 2015 preserved short-term cash but left Vodafone with no competitive moat when Jio launched. Companies that invested in infrastructure before disruption arrived were far better positioned to survive the price war.'});
+            } else if (dec[1] === 'B') {
+                learnings.push({pos:true,icon:'✅',cat:'Strategic Investment',title:'Investing before disruption was the right instinct',text:'Choosing to build network quality in 2015 was strategically sound — exactly what Airtel did. Building cost-efficient 4G infrastructure reduced cost-per-GB and created a resilience buffer before Jio\'s launch.'});
+            } else {
+                learnings.push({pos:false,icon:'⚠️',cat:'Debt Management',title:'Debt-fuelled expansion amplifies downside risk',text:'Aggressive expansion through borrowing raised the Debt/Equity ratio to 1.7x. When Jio arrived, debt servicing consumed 35% of EBITDA — leaving zero room to compete on price or invest in quality.'});
+            }
+
+            if (dec[2] === 'A') {
+                learnings.push({pos:false,icon:'⚠️',cat:'Pricing Strategy',title:'Matching prices without cost parity accelerates losses',text:'Cutting prices to Jio\'s level while having 7x higher operating costs caused ₹9,500 Cr in losses over 18 months. Price cuts only work when your cost structure supports them — without that, it just speeds up the collapse.'});
+            } else if (dec[2] === 'B') {
+                learnings.push({pos:true,icon:'✅',cat:'Pricing Strategy',title:'Protecting premium customers was the right discipline',text:'Focusing on high-ARPU users and service quality was the textbook response to a price war you cannot win on cost. While market share fell, maintaining margins created a financially viable core — the path Airtel ultimately took.'});
+            } else {
+                learnings.push({pos:true,icon:'✅',cat:'Financial Discipline',title:'Strategic retreat is better than bleeding across all fronts',text:'Exiting unprofitable circles reduced burn rate and preserved capital. Profitability in fewer markets almost always beats mounting losses across every territory — discipline here creates the base for future recovery.'});
+            }
+
+            if (dec[3] === 'A') {
+                learnings.push({pos:false,icon:'⚠️',cat:'M&A Strategy',title:'Merging debt-heavy companies multiplies the risk',text:'The Vodafone-Idea merger created India\'s largest telecom by subscribers but combined two struggling balance sheets into ₹1,04,000 Cr of debt. Integration costs, cultural friction, and AGR liabilities meant the merged entity still faced existential pressure.'});
+            } else if (dec[3] === 'B') {
+                learnings.push({pos:true,icon:'✅',cat:'Operational Focus',title:'Independence + focus can outperform size alone',text:'Staying independent and focusing on enterprise and premium urban segments created a leaner, more financially stable operation. Smaller can be more sustainable when the alternative is merging two troubled companies.'});
+            } else {
+                learnings.push({pos:true,icon:'💡',cat:'Capital Strategy',title:'Strategic investors bring more than just capital',text:'Attracting PE or strategic investors injects equity, reduces debt ratios, and brings operational expertise — without the full complexity of a merger. This was arguably the most surgical financial tool available at this stage.'});
+            }
+
+            if (dec[4] === 'A') {
+                learnings.push({pos:false,icon:'⚠️',cat:'Liquidity Management',title:'Paying large dues without reserves leads to insolvency',text:'Paying ₹28,000 Cr AGR immediately depleted all reserves. Without working capital, companies cannot pay salaries, vendors, or spectrum fees — making compliance itself the trigger for collapse. Always model liquidity before large lump-sum payments.'});
+            } else if (dec[4] === 'B') {
+                learnings.push({pos:true,icon:'✅',cat:'Regulatory Strategy',title:'Negotiating payment timelines is a legitimate financial tool',text:'Seeking relief to spread AGR payments over a decade was the only financially viable path. Combined with targeted tariff increases, this created a narrow but real path to solvency — proving that regulatory engagement is a CFO-level skill.'});
+            } else {
+                learnings.push({pos:false,icon:'⚠️',cat:'Long-term Thinking',title:'Exiting a market erases all future optionality',text:'A market exit recovers some value through asset sales but destroys all future upside. Once a telecom exits a country, rebuilding that position costs 10x more than defending it. Controlled exit should always be the last resort.'});
+            }
+
+            if (dec[5] === 'A') {
+                learnings.push({pos:false,icon:'⚠️',cat:'Stakeholder Strategy',title:'Full exit destroys long-term stakeholder value',text:'Voluntary liquidation recovered roughly 55 paise per rupee for creditors and resulted in ₹3.1 lakh crore in value destruction since 2016. Identifying strategic support earlier — from government or domestic investors — could have changed this outcome.'});
+            } else if (dec[5] === 'B') {
+                learnings.push({pos:true,icon:'✅',cat:'Government Relations',title:'Proactive government engagement can be a survival strategy',text:'Government converting dues to equity and providing a moratorium demonstrates that regulatory relationships have real balance sheet implications. Companies that treat government as a partner rather than an adversary often find more durable solutions.'});
+            } else {
+                learnings.push({pos:true,icon:'✅',cat:'Strategic Partnerships',title:'Domestic investors unlock synergies unavailable to foreign companies',text:'A Tata or Adani consortium brings tower assets, fiber infrastructure, and enterprise synergies that no foreign investor can replicate. Domestic backing also brings political credibility — reducing regulatory risk for the future.'});
+            }
+
+            const grid = document.getElementById('keyLearningsGrid');
+            grid.innerHTML = learnings.map((l, i) => {
+                const cls = l.pos ? 'kl-card kl-card-positive' : 'kl-card';
+                const delay = i * 0.12;
+                return '<div class="' + cls + '" style="animation-delay:' + delay + 's">' +
+                    '<div class="kl-card-badge">' + l.icon + '</div>' +
+                    '<div class="kl-card-body">' +
+                    '<div class="kl-card-label">' + l.cat + '</div>' +
+                    '<div class="kl-card-title">' + l.title + '</div>' +
+                    '<div class="kl-card-text">' + l.text + '</div>' +
+                    '</div></div>';
+            }).join('');
+        }
+
+        function showAnalysisPage(decisionNum) {
+            const nextDecision = decisionNum + 1;
+            if (nextDecision <= 5) {
+                showDecision(nextDecision);
+            } else {
+                for (let i=1;i<=5;i++) {
+                    const dec = document.getElementById('decision'+i);
+                    const ana = document.getElementById('analysis'+i);
+                    if (dec) dec.style.display='none';
+                    if (ana) ana.style.display='none';
+                }
+
+                const chipLabels={1:'Pre-Jio Strategy',2:'Jio Price War',3:'Merger Decision',4:'AGR Crisis',5:'Final Endgame'};
+                const optionFull={A:'Option A',B:'Option B',C:'Option C'};
+                let chipsHTML='';
+                for (let i=1;i<=5;i++) {
+                    const c=decisions[i]||'?';
+                    chipsHTML+='<div class="decision-chip">D'+i+': '+chipLabels[i]+'<span>'+optionFull[c]+'</span></div>';
+                }
+                document.getElementById('decisionSummary').innerHTML=chipsHTML;
+
+                const userPath = buildUserPath(decisions);
+                const userFinal = userPath[userPath.length-1];
+                const actualFinal = actualHistory.revenue[actualHistory.revenue.length-1];
+                const delta = userFinal - actualFinal;
+
+                document.getElementById('userFinalRevenue').textContent = '₹'+userFinal.toLocaleString()+' Cr';
+                document.getElementById('userDelta').textContent = (delta>=0?'+':'')+'₹'+Math.abs(delta).toLocaleString()+' Cr';
+                document.getElementById('userDelta').style.color = delta>=0 ? '#4CAF50' : '#DC143C';
+
+                setTimeout(()=>{
+                    if (finalChart) finalChart.destroy();
+                    const ctx = document.getElementById('finalComparisonChart').getContext('2d');
+                    finalChart = new Chart(ctx,{
+                        type:'line',
+                        data:{
+                            labels: actualHistory.labels,
+                            datasets:[
+                                {
+                                    label:'Your CEO Path',
+                                    data: userPath,
+                                    borderColor:'#D4AF37',
+                                    backgroundColor:'rgba(212,175,55,0.08)',
+                                    borderWidth:3,
+                                    pointRadius:5,
+                                    pointBackgroundColor:'#D4AF37',
+                                    pointBorderColor:'#fff',
+                                    pointBorderWidth:2,
+                                    tension:0.4,
+                                    fill:false
+                                },
+                                {
+                                    label:'Actual Vodafone',
+                                    data: actualHistory.revenue,
+                                    borderColor:'#DC143C',
+                                    backgroundColor:'rgba(220,20,60,0.06)',
+                                    borderWidth:3,
+                                    borderDash:[8,4],
+                                    pointRadius:4,
+                                    pointBackgroundColor:'#DC143C',
+                                    pointBorderColor:'#fff',
+                                    pointBorderWidth:1,
+                                    tension:0.4,
+                                    fill:false
+                                }
+                            ]
+                        },
+                        options:{
+                            responsive:true,
+                            maintainAspectRatio:false,
+                            interaction:{mode:'index',intersect:false},
+                            plugins:{
+                                legend:{display:false},
+                                tooltip:{
+                                    backgroundColor:'rgba(30,30,30,0.95)',
+                                    titleColor:'#D4AF37',
+                                    bodyColor:'#F5F5DC',
+                                    borderColor:'#D4AF37',
+                                    borderWidth:1,
+                                    padding:14,
+                                    callbacks:{
+                                        label:function(c){return ' '+c.dataset.label+': \u20B9'+c.parsed.y.toLocaleString()+' Cr';}
+                                    }
+                                }
+                            },
+                            scales:{
+                                y:{
+                                    beginAtZero:false,
+                                    grid:{color:'rgba(255,255,255,0.07)'},
+                                    ticks:{color:'#aaa',callback:function(v){return '\u20B9'+(v/1000).toFixed(0)+'K Cr';}}
+                                },
+                                x:{
+                                    grid:{color:'rgba(255,255,255,0.05)'},
+                                    ticks:{color:'#aaa',maxRotation:45}
+                                }
+                            },
+                            animation:{duration:2000,easing:'easeInOutQuart'}
+                        }
+                    });
+                },300);
+
+                injectKeyLearnings(decisions);
+
+                const completion = document.getElementById('completionScreen');
+                completion.classList.remove('hidden');
+                completion.style.display='block';
+                window.scrollTo({top:0,behavior:'smooth'});
+            }
+        }
+
+        function restartSimulation() {
+            decisions={};
+            performanceCharts={};
+            if (finalChart) { finalChart.destroy(); finalChart=null; }
+            for (let i=1;i<=5;i++) {
+                const dec=document.getElementById('decision'+i);
+                const ana=document.getElementById('analysis'+i);
+                if (dec){dec.style.display='none';dec.classList.add('hidden');}
+                if (ana){ana.style.display='none';}
+            }
+            document.getElementById('completionScreen').style.display='none';
+            document.getElementById('completionScreen').classList.add('hidden');
+            showDecision(1);
+        }
+
+                function selectOption(decisionNum, option) {
+            decisions[decisionNum] = option;
+
+            // Hide ALL decisions and analyses
+            for (let i = 1; i <= 5; i++) {
+                const dec = document.getElementById('decision' + i);
+                const ana = document.getElementById('analysis' + i);
+                if (dec) dec.style.display = 'none';
+                if (ana) ana.style.display = 'none';
+            }
+
+            // Show analysis section (graph page only, detail page stays hidden)
+            const analysisSection = document.getElementById('analysis' + decisionNum);
+            const detailPage = document.getElementById('detailPage' + decisionNum);
+            if (detailPage) detailPage.style.display = 'none';
+
+            analysisSection.style.display = 'block';
+            analysisSection.classList.add('show');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // Create performance graph after short delay
+            setTimeout(() => {
+                createPerformanceGraph(decisionNum, option);
+                updateBalanceSheet(decisionNum, option);
+            }, 300);
+        }
+
+        function createPerformanceGraph(decisionNum, selectedOption) {
+            const canvas = document.getElementById('performanceChart' + decisionNum);
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            
+            // Different data for each decision
+            const graphData = getGraphData(decisionNum, selectedOption);
+            
+            if (performanceCharts[decisionNum]) {
+                performanceCharts[decisionNum].destroy();
+            }
+            
+            performanceCharts[decisionNum] = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: graphData.labels,
+                    datasets: [
+                        {
+                            label: 'Option A Impact',
+                            data: graphData.optionA,
+                            borderColor: selectedOption === 'A' ? '#4CAF50' : 'rgba(76, 175, 80, 0.3)',
+                            backgroundColor: selectedOption === 'A' ? 'rgba(76, 175, 80, 0.1)' : 'transparent',
+                            borderWidth: selectedOption === 'A' ? 4 : 2,
+                            tension: 0.4,
+                            fill: selectedOption === 'A'
+                        },
+                        {
+                            label: 'Option B Impact',
+                            data: graphData.optionB,
+                            borderColor: selectedOption === 'B' ? '#2196F3' : 'rgba(33, 150, 243, 0.3)',
+                            backgroundColor: selectedOption === 'B' ? 'rgba(33, 150, 243, 0.1)' : 'transparent',
+                            borderWidth: selectedOption === 'B' ? 4 : 2,
+                            tension: 0.4,
+                            fill: selectedOption === 'B'
+                        },
+                        {
+                            label: 'Option C Impact',
+                            data: graphData.optionC,
+                            borderColor: selectedOption === 'C' ? '#FF9800' : 'rgba(255, 152, 0, 0.3)',
+                            backgroundColor: selectedOption === 'C' ? 'rgba(255, 152, 0, 0.1)' : 'transparent',
+                            borderWidth: selectedOption === 'C' ? 4 : 2,
+                            tension: 0.4,
+                            fill: selectedOption === 'C'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Revenue Performance (₹ Crores)',
+                            color: '#D4AF37',
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(42, 42, 42, 0.95)',
+                            titleColor: '#D4AF37',
+                            bodyColor: '#F5F5DC',
+                            borderColor: '#DC143C',
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: true
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#F5F5DC',
+                                callback: function(value) {
+                                    return '₹' + value.toLocaleString();
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#F5F5DC'
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 2000,
+                        easing: 'easeInOutQuart'
+                    }
+                }
+            });
+        }
+
+        function getGraphData(decisionNum, selectedOption) {
+            const data = {
+                1: {
+                    labels: ['Q1 2015', 'Q3 2015', 'Q1 2016', 'Q3 2016', 'Q1 2017', 'Q3 2017'],
+                    optionA: [11500, 11600, 11400, 10200, 8500, 7800], // Status quo - gradual decline
+                    optionB: [11500, 11200, 11000, 10800, 11200, 11800], // Investment - short dip, then recovery
+                    optionC: [11500, 12200, 12800, 11500, 9200, 8100]  // Aggressive expansion - spike then crash
+                },
+                2: {
+                    labels: ['Q3 2016', 'Q1 2017', 'Q3 2017', 'Q1 2018', 'Q3 2018'],
+                    optionA: [10200, 8500, 7800, 7200, 6800], // Price matching - steep decline
+                    optionB: [10200, 9800, 9400, 9200, 9500], // Premium strategy - slow decline then stabilize
+                    optionC: [10200, 9200, 8800, 8600, 8900]  // Exit circles - medium decline
+                },
+                3: {
+                    labels: ['Q1 2017', 'Q3 2017', 'Q1 2018', 'Q3 2018', 'Q1 2019'],
+                    optionA: [15600, 14200, 12800, 11500, 10800], // Merger - combined revenue but declining
+                    optionB: [7800, 7400, 7200, 7400, 7800],      // Independent - stable lower revenue
+                    optionC: [7800, 8600, 9200, 9800, 10200]      // Strategic investor - growth
+                },
+                4: {
+                    labels: ['Q3 2019', 'Q1 2020', 'Q3 2020', 'Q1 2021', 'Q3 2021'],
+                    optionA: [10800, 9200, 7500, 6200, 5100], // Debt to pay - revenue collapse
+                    optionB: [10800, 10200, 9800, 9600, 10100], // Seek relief - stabilize
+                    optionC: [10800, 9500, 8200, 6500, 4800]  // Exit - wind down
+                },
+                5: {
+                    labels: ['Q1 2020', 'Q3 2020', 'Q1 2021', 'Q3 2021', 'Q1 2022', 'Q3 2022'],
+                    optionA: [9200, 7800, 6200, 4500, 2800, 1200], // Complete exit - wind down
+                    optionB: [9200, 8900, 8800, 9100, 9400, 9600], // Government support - slow recovery
+                    optionC: [9200, 9600, 10200, 10800, 11500, 12200] // Domestic investor - growth
+                }
+            };
+            
+            return data[decisionNum];
+        }
+
+        // Balance Sheet Update Function - With Cumulative State Tracking
+        function updateBalanceSheet(decisionNum, option) {
+            // Each question has its own starting values (based on previous question outcomes)
+            const questionStartValues = {
+                1: { cash: 18000, debt: 35000, subs: 200, arpu: 140 },
+                2: { cash: 8500, debt: 12000, subs: 200, arpu: 140 },
+                3: { cash: 2800, debt: 45000, subs: 200, arpu: 140 },
+                4: { cash: 1200, debt: 58000, subs: 200, arpu: 140 },
+                5: { cash: 300, debt: 195000, subs: 200, arpu: 140 }
+            };
+
+            // Get initial values for THIS specific question
+            const initialValues = questionStartValues[decisionNum];
+
+            // Financial CHANGES for each decision and option combination
+            const financialChanges = {
+                1: { // Decision 1: Pre-Jio Strategy (2015)
+                    A: { // Status Quo
+                        cashChange: -2000, cashChangeType: 'negative', cashSubtext: 'Minimal investment, slow burn',
+                        debtChange: 0, debtChangeType: 'neutral', debtSubtext: 'D/E ratio: 1.2x',
+                        subsChange: 5, subsChangeType: 'neutral', subsSubtext: 'Market share: 23%',
+                        arpuChange: 50, arpuChangeType: 'neutral', arpuSubtext: 'Industry average',
+                        rating: 'BBB', ratingDesc: 'Stable but unprepared for disruption. Adequate liquidity but no competitive moat.',
+                        impact: 'Maintaining status quo preserves short-term cash but leaves cost structure vulnerable. No strategic buffer for competitive threats.'
+                    },
+                    B: { // Network Investment
+                        cashChange: -8000, cashChangeType: 'negative', cashSubtext: 'Heavy CAPEX deployment',
+                        debtChange: 0, debtChangeType: 'neutral', debtSubtext: 'D/E ratio: 1.4x',
+                        subsChange: 8, subsChangeType: 'positive', subsSubtext: 'Market share: 23.5%',
+                        arpuChange: 55, arpuChangeType: 'positive', arpuSubtext: '4G premium pricing',
+                        rating: 'BBB', ratingDesc: 'Short-term pressure, long-term strength. Strategic investment reduces future operating costs by 40%.',
+                        impact: 'Aggressive investment strains liquidity now but creates structural cost advantage. Cost per GB drops from ₹0.85 to ₹0.45 by 2017.'
+                    },
+                    C: { // Debt-Fueled Expansion
+                        cashChange: -4000, cashChangeType: 'negative', cashSubtext: 'Debt-funded liquidity',
+                        debtChange: 6000, debtChangeType: 'negative', debtSubtext: 'D/E ratio: 1.7x (dangerous)',
+                        subsChange: 18, subsChangeType: 'positive', subsSubtext: 'Market share: 24.5%',
+                        arpuChange: 45, arpuChangeType: 'neutral', arpuSubtext: 'Promo-driven growth',
+                        rating: 'BB', ratingDesc: 'High risk. Excessive leverage with no disruption buffer. Debt servicing consumes 35% of EBITDA.',
+                        impact: 'Borrowed growth masks structural weakness. When Jio launches, debt burden becomes existential threat with zero financial flexibility.'
+                    }
+                },
+                2: { // Decision 2: Jio Price War Response (2016)
+                    A: { // Price Matching
+                        cashChange: -6000, cashChangeType: 'negative', cashSubtext: 'Bleeding ₹800Cr/month',
+                        debtChange: 0, debtChangeType: 'neutral', debtSubtext: 'D/E ratio: 2.8x',
+                        subsChange: 10, subsChangeType: 'positive', subsSubtext: 'Retention focus',
+                        arpuChange: -95, arpuChangeType: 'negative', arpuSubtext: '↓50% in 6 months',
+                        rating: 'B', ratingDesc: 'Severe distress. Price cuts without cost structure fix = revenue collapse. EBITDA margins crash to 8%.',
+                        impact: 'Matching Jio pricing with 7x cost disadvantage accelerates cash burn. ₹9,500 crore lost in 18 months with no path to profitability.'
+                    },
+                    B: { // Premium Strategy
+                        cashChange: -3500, cashChangeType: 'neutral', cashSubtext: 'Controlled decline',
+                        debtChange: 3000, debtChangeType: 'negative', debtSubtext: 'D/E ratio: 2.1x',
+                        subsChange: -12, subsChangeType: 'negative', subsSubtext: '↓8% subscriber base',
+                        arpuChange: -48, arpuChangeType: 'neutral', arpuSubtext: 'Premium positioning',
+                        rating: 'BB', ratingDesc: 'Defensive stability. Sacrifices volume for margins. Buys 12-18 months to restructure or find strategic partner.',
+                        impact: 'Loses market share but preserves financial viability. EBITDA stays at 18-20%, creating merger negotiation leverage.'
+                    },
+                    C: { // Circle Exit
+                        cashChange: -2000, cashChangeType: 'positive', cashSubtext: 'Asset monetization',
+                        debtChange: 500, debtChangeType: 'negative', debtSubtext: 'D/E ratio: 1.8x',
+                        subsChange: -22, subsChangeType: 'negative', subsSubtext: '↓13% from exits',
+                        arpuChange: -35, arpuChangeType: 'positive', arpuSubtext: 'Focus on metros',
+                        rating: 'BBB', ratingDesc: 'Strategic retreat. Converting uneconomical assets to cash while reinforcing profitable markets.',
+                        impact: 'Selling 8 loss-making circles raises ₹12,000 crore, reducing debt and focusing on top 15 cities where infrastructure advantage exists.'
+                    }
+                },
+                3: { // Decision 3: Merger Decision (2017)
+                    A: { // Merge with Idea
+                        cashChange: -500, cashChangeType: 'neutral', cashSubtext: 'Combined entity',
+                        debtChange: 5000, debtChangeType: 'negative', debtSubtext: 'D/E ratio: 7.2x (crisis)',
+                        subsChange: 208, subsChangeType: 'positive', subsSubtext: '#1 market position',
+                        arpuChange: -82, arpuChangeType: 'negative', arpuSubtext: 'Pressure continues',
+                        rating: 'CCC', ratingDesc: 'Distressed merger. Combined debt ₹1.12 lakh crore with overlapping networks. No synergy realization for 24+ months.',
+                        impact: 'Two weak players merge = bigger weak player. Debt servicing alone needs ₹15,000 crore annually while losing ₹4,500 crore in EBITDA.'
+                    },
+                    B: { // Stay Independent
+                        cashChange: -300, cashChangeType: 'positive', cashSubtext: 'Asset-light focus',
+                        debtChange: 2700, debtChangeType: 'negative', debtSubtext: 'D/E ratio: 2.0x',
+                        subsChange: -25, subsChangeType: 'negative', subsSubtext: 'Smaller but viable',
+                        arpuChange: -55, arpuChangeType: 'positive', arpuSubtext: 'Premium niche',
+                        rating: 'BB', ratingDesc: 'Stable retreat. Becomes #4 player but maintains positive cash flow in enterprise and premium urban segments.',
+                        impact: 'Avoids merger complexity. Focus on enterprise (20% margins) and metros. Smaller but sustainable with acquisition potential later.'
+                    },
+                    C: { // Strategic Investor
+                        cashChange: -600, cashChangeType: 'positive', cashSubtext: 'PE/Strategic capital',
+                        debtChange: 5400, debtChangeType: 'negative', debtSubtext: 'D/E ratio: 1.1x',
+                        subsChange: -18, subsChangeType: 'neutral', subsSubtext: 'Stabilized base',
+                        arpuChange: -45, arpuChangeType: 'positive', arpuSubtext: 'Investment in quality',
+                        rating: 'BBB', ratingDesc: 'Equity infusion transforms balance sheet. ₹18,000 crore from KKR/Brookfield clears debt, funds 5G transition.',
+                        impact: 'Dilution: 35% stake for capital, but creates path to profitability. New investors bring operational expertise and global best practices.'
+                    }
+                },
+                4: { // Decision 4: AGR Crisis (2019)
+                    A: { // Pay AGR Immediately
+                        cashChange: 0, cashChangeType: 'negative', cashSubtext: 'Near-zero liquidity',
+                        debtChange: 40000, debtChangeType: 'negative', debtSubtext: 'D/E ratio: 18.5x',
+                        subsChange: -113, subsChangeType: 'negative', subsSubtext: 'Subscriber exodus',
+                        arpuChange: -88, arpuChangeType: 'negative', arpuSubtext: 'No investment capacity',
+                        rating: 'D', ratingDesc: 'Default imminent. Paying ₹28,000 crore AGR depletes all reserves. Cannot fund operations or network maintenance.',
+                        impact: 'Compliance triggers insolvency. No cash for salaries, vendor payments, or spectrum fees. Government becomes largest creditor.'
+                    },
+                    B: { // Seek Relief
+                        cashChange: -1200, cashChangeType: 'neutral', cashSubtext: 'Extended timeline',
+                        debtChange: 300, debtChangeType: 'negative', debtSubtext: 'D/E ratio: 5.8x',
+                        subsChange: -106, subsChangeType: 'neutral', subsSubtext: 'Stabilizing',
+                        arpuChange: -75, arpuChangeType: 'positive', arpuSubtext: 'Tariff normalization',
+                        rating: 'B', ratingDesc: 'Legal relief provides breathing room. 10-year payment plan (₹2,800 crore/year) is manageable with tariff increases.',
+                        impact: 'Supreme Court relief spreads AGR over decade. Combined with 20-25% tariff hikes, creates narrow path to solvency if execution perfect.'
+                    },
+                    C: { // Exit Market
+                        cashChange: -1200, cashChangeType: 'positive', cashSubtext: 'Liquidation proceeds',
+                        debtChange: 2800, debtChangeType: 'negative', debtSubtext: 'Residual obligations',
+                        subsChange: -200, subsChangeType: 'negative', subsSubtext: 'Full exit',
+                        arpuChange: -190, arpuChangeType: 'negative', arpuSubtext: 'Operations ceased',
+                        rating: 'D', ratingDesc: 'Controlled liquidation. Selling spectrum, towers, and fiber to Jio/Airtel. Creditors recover 40-50 paise per rupee.',
+                        impact: 'Orderly shutdown better than insolvency. Spectrum sale to Airtel raises ₹35,000 crore. Employees transferred with assets.'
+                    }
+                },
+                5: { // Decision 5: Final Endgame (2020)
+                    A: { // Complete Exit
+                        cashChange: -300, cashChangeType: 'neutral', cashSubtext: 'Wind-down reserve',
+                        debtChange: 2700, debtChangeType: 'negative', debtSubtext: 'Haircut negotiated',
+                        subsChange: -200, subsChangeType: 'negative', subsSubtext: 'Subscriber transfer',
+                        arpuChange: -190, arpuChangeType: 'negative', arpuSubtext: 'Market exit',
+                        rating: 'D', ratingDesc: 'Voluntary liquidation. Asset sale covers 55% of debt. Vodafone UK writes off ₹45,000 crore India investment.',
+                        impact: '₹3.1 lakh crore value destroyed since 2016. Becomes case study in: competitive misjudgment, debt traps, regulatory risk.'
+                    },
+                    B: { // Government Support
+                        cashChange: -300, cashChangeType: 'positive', cashSubtext: 'Relief package',
+                        debtChange: 2200, debtChangeType: 'negative', debtSubtext: 'D/E ratio: 3.2x',
+                        subsChange: -163, subsChangeType: 'positive', subsSubtext: '#3 player',
+                        arpuChange: -42, arpuChangeType: 'positive', arpuSubtext: 'Tariff discipline',
+                        rating: 'BB', ratingDesc: 'Government converts dues to equity (33% stake). 4-year moratorium on spectrum, AGR payments creates stability window.',
+                        impact: 'Nationalization-lite keeps #3 player alive for strategic autonomy. Prevents duopoly. Requires ₹15,000 crore capital from promoters.'
+                    },
+                    C: { // Domestic Investor
+                        cashChange: -300, cashChangeType: 'positive', cashSubtext: 'Fresh equity',
+                        debtChange: 4700, debtChangeType: 'negative', debtSubtext: 'D/E ratio: 1.8x',
+                        subsChange: -140, subsChangeType: 'positive', subsSubtext: 'Growth resuming',
+                        arpuChange: -25, arpuChangeType: 'positive', arpuSubtext: '5G readiness',
+                        rating: 'BBB', ratingDesc: 'Tata/Adani consortium invests ₹28,000 crore for 51% stake. Brings tower assets, fiber, and enterprise synergies.',
+                        impact: 'Industrial house backing provides credibility. Integrated telecom-to-digital strategy. Becomes India-focused challenger in 5G era.'
+                    }
+                }
+            };
+
+            const changes = financialChanges[decisionNum][option];
+            
+            // Calculate new values based on initial values + changes
+            const data = {
+                cash: initialValues.cash + changes.cashChange,
+                cashChange: changes.cashChangeType,
+                cashSubtext: changes.cashSubtext,
+                debt: initialValues.debt + changes.debtChange,
+                debtChange: changes.debtChangeType,
+                debtSubtext: changes.debtSubtext,
+                subs: initialValues.subs + changes.subsChange,
+                subsChange: changes.subsChangeType,
+                subsSubtext: changes.subsSubtext,
+                arpu: initialValues.arpu + changes.arpuChange,
+                arpuChange: changes.arpuChangeType,
+                arpuSubtext: changes.arpuSubtext,
+                rating: changes.rating,
+                ratingDesc: changes.ratingDesc,
+                impact: changes.impact
+            };
+            
+            // Animate metric cards
+            const metricCards = document.querySelectorAll(`#balanceSheet${decisionNum} .metric-card`);
+            metricCards.forEach(card => {
+                card.classList.remove('updated');
+                setTimeout(() => card.classList.add('updated'), 100);
+            });
+
+            // Update Cash
+            document.getElementById(`cashValue${decisionNum}`).textContent = `₹${data.cash.toLocaleString()}Cr`;
+            document.getElementById(`cashChange${decisionNum}`).textContent = 
+                data.cashChange === 'positive' ? '↑' : data.cashChange === 'negative' ? '↓' : '→';
+            document.getElementById(`cashChange${decisionNum}`).className = `metric-change ${data.cashChange}`;
+            document.getElementById(`cashSubtext${decisionNum}`).textContent = data.cashSubtext;
+
+            // Update Debt
+            document.getElementById(`debtValue${decisionNum}`).textContent = `₹${data.debt.toLocaleString()}Cr`;
+            document.getElementById(`debtChange${decisionNum}`).textContent = 
+                data.debtChange === 'positive' ? '↓' : data.debtChange === 'negative' ? '↑' : '→';
+            document.getElementById(`debtChange${decisionNum}`).className = 
+                `metric-change ${data.debtChange === 'positive' ? 'positive' : data.debtChange === 'negative' ? 'negative' : 'neutral'}`;
+            document.getElementById(`debtSubtext${decisionNum}`).textContent = data.debtSubtext;
+
+            // Update Subscribers
+            document.getElementById(`subsValue${decisionNum}`).textContent = `${data.subs}M`;
+            document.getElementById(`subsChange${decisionNum}`).textContent = 
+                data.subsChange === 'positive' ? '↑' : data.subsChange === 'negative' ? '↓' : '→';
+            document.getElementById(`subsChange${decisionNum}`).className = `metric-change ${data.subsChange}`;
+            document.getElementById(`subsSubtext${decisionNum}`).textContent = data.subsSubtext;
+
+            // Update ARPU
+            document.getElementById(`arpuValue${decisionNum}`).textContent = `₹${data.arpu}`;
+            document.getElementById(`arpuChange${decisionNum}`).textContent = 
+                data.arpuChange === 'positive' ? '↑' : data.arpuChange === 'negative' ? '↓' : '→';
+            document.getElementById(`arpuChange${decisionNum}`).className = `metric-change ${data.arpuChange}`;
+            document.getElementById(`arpuSubtext${decisionNum}`).textContent = data.arpuSubtext;
+
+            // Update Credit Rating
+            const ratingBadge = document.getElementById(`ratingBadge${decisionNum}`);
+            ratingBadge.textContent = data.rating;
+            ratingBadge.className = `rating-badge rating-${data.rating}`;
+            document.getElementById(`ratingDescription${decisionNum}`).textContent = data.ratingDesc;
+
+            // Show Impact Alert
+            const impactAlert = document.getElementById(`impactAlert${decisionNum}`);
+            document.getElementById(`impactText${decisionNum}`).textContent = data.impact;
+            impactAlert.style.display = 'block';
+
+            // Animate the entire balance sheet
+            const balanceSheet = document.getElementById(`balanceSheet${decisionNum}`);
+            balanceSheet.style.opacity = '0';
+            balanceSheet.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                balanceSheet.style.transition = 'all 0.6s ease-out';
+                balanceSheet.style.opacity = '1';
+                balanceSheet.style.transform = 'translateY(0)';
+            }, 400);
+        }
+
+        function showDecision(num) {
+            // Hide ALL decision cards and analysis sections
+            for (let i = 1; i <= 5; i++) {
+                const dec = document.getElementById('decision' + i);
+                const ana = document.getElementById('analysis' + i);
+                if (dec) dec.style.display = 'none';
+                if (ana) ana.style.display = 'none';
+            }
+
+            // Show only the target decision card
+            const target = document.getElementById('decision' + num);
+            if (target) {
+                target.classList.remove('hidden');
+                target.style.display = 'block';
+            }
+
+            // Scroll to very top of page
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Animate bars on analysis show
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const bars = entry.target.querySelectorAll('.bar-fill');
+                    bars.forEach((bar, index) => {
+                        setTimeout(() => {
+                            bar.style.width = bar.style.width; // Trigger animation
+                        }, index * 200);
+                    });
+                }
+            });
+        });
+
+        document.querySelectorAll('.analysis-section').forEach(section => {
+            observer.observe(section);
+        });
+    </script>
+</body>
+</html>
